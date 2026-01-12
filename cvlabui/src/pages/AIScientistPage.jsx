@@ -8,6 +8,7 @@ import {
   Stack,
   CircularProgress
 } from "@mui/material";
+import { useRef } from "react";
 
 export default function AIScientistPage() {
   const [messages, setMessages] = useState([
@@ -47,29 +48,38 @@ export default function AIScientistPage() {
   }
 };
 
-// Helper function to display words one by one
+const intervalRef = useRef(null);
+
 const addMessageWordByWord = (text) => {
   return new Promise((resolve) => {
-    const words = text.split(" ");
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+
+    const words = text.split(/\s+/);
     let idx = 0;
 
-    // Start a new message with empty text
     setMessages((prev) => [...prev, { role: "ai", text: "" }]);
 
-    const interval = setInterval(() => {
+    intervalRef.current = setInterval(() => {
       setMessages((prev) => {
         const newMessages = [...prev];
-        const lastMsg = newMessages[newMessages.length - 1];
+        const lastMsg = { ...newMessages[newMessages.length - 1] };
+
         lastMsg.text += (lastMsg.text ? " " : "") + words[idx];
+        newMessages[newMessages.length - 1] = lastMsg;
+
         return newMessages;
       });
 
       idx++;
+
       if (idx >= words.length) {
-        clearInterval(interval);
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
         resolve();
       }
-    }, 150); // 150ms delay between words
+    }, 150);
   });
 };
 
