@@ -46,7 +46,7 @@ const get_method = (endpoint, payload = null) => {
       return response.json();
     })
     .then((result) => {
-      setState(JSON.stringify(result));
+      setState(JSON.stringify(result["message"]));
     })
     .catch((error) => {
       console.error(error);
@@ -68,7 +68,7 @@ const post_method = (endpoint, data) => {
       return response.json();
     })
     .then((result) => {
-      setState(JSON.stringify(result));
+      setState(JSON.stringify(result["message"]));
     })
     .catch((error) => {
       console.error(error);
@@ -78,18 +78,18 @@ const post_method = (endpoint, data) => {
 
 
 return (
-    <Paper style={{ padding: 30, maxWidth: 350, margin: "0px auto" }} elevation={0}>
+    <Paper style={{ padding: 30, maxWidth: 500, margin: "0px auto" }} elevation={0}>
       <Stack direction="row" spacing={2} marginBottom={2}>
-        <Button variant="contained" onClick={() => get_method("/open_front_door")}sx={{ width: 250, height: 60 }} > Open Front Door <OpenDoorIcon/> </Button>
-        <Button variant="contained" onClick={() => get_method("/close_front_door")}sx={{ width: 250, height: 60 }}>Close Front Door <CloseDoorIcon/></Button>
+        <Button variant="contained" onClick={() => get_method("/open_front_door")}sx={{ width: 250, height: 60 }} > Open Front Door <OpenDoorIcon style={{ marginLeft: 11 }}/> </Button>
+        <Button variant="contained" onClick={() => get_method("/close_front_door")}sx={{ width: 250, height: 60 }}>Close Front Door <CloseDoorIcon style={{ marginLeft: 11 }}/></Button>
       </Stack>
       <Stack direction="row" spacing={2} marginBottom={2}>
-        <Button variant="contained" onClick={() => get_method("/open_side_door")}sx={{ width: 250, height: 60 }}>Open Side Doors <OpenSideDoorsIcon/></Button>
-        <Button variant="contained" onClick={() => get_method("/close_side_door")}sx={{ width: 250, height: 60 }}>Close Side Doors <CloseSideDoorsIcon/></Button>
+        <Button variant="contained" onClick={() => get_method("/open_side_door")}sx={{ width: 250, height: 60 }}>Open Side Doors <OpenSideDoorsIcon style={{ marginLeft: 11 }}/></Button>
+        <Button variant="contained" onClick={() => get_method("/close_side_door")}sx={{ width: 250, height: 60 }}>Close Side Doors <CloseSideDoorsIcon style={{ marginLeft: 11 }}/></Button>
       </Stack>
       <Stack direction="row" spacing={2} marginBottom={2}>
-        <Button variant="contained" onClick={() => get_method("/lock_dosing_head")}sx={{ width: 250, height: 60 }}>Lock Cartridge <LockIcon/></Button>
-        <Button variant="contained" onClick={() => get_method("/unlock_dosing_head")}sx={{ width: 250, height: 60 }}>Unlock Cartridge <UnlockIcon/></Button>
+        <Button variant="contained" onClick={() => get_method("/lock_dosing_head")}sx={{ width: 250, height: 60 }}>Lock Cartridge <LockIcon style={{ marginLeft: 11 }}/></Button>
+        <Button variant="contained" onClick={() => get_method("/unlock_dosing_head")}sx={{ width: 250, height: 60 }}>Unlock Cartridge <UnlockIcon style={{ marginLeft: 11 }}/></Button>
       </Stack>
       <Stack direction="column" spacing={2} marginBottom={2}>
         <TextField
@@ -99,7 +99,7 @@ return (
           fullWidth
         />
         <Button variant="contained" onClick={()=> post_method("/set_target_mass", {"mass": mass})} color="secondary"> Set Target Mass <BalanceIcon style={{ marginLeft: 11 }}/></Button>
-        
+      </Stack>  
       <Stack direction="row" spacing={2} marginBottom={2}>
         <Button variant="contained" onClick={() => get_method("/tare_balance")} sx={{ width: 250, height: 60 }} color = "secondary"> TARE <TareIcon style={{ marginLeft: 11 }}/></Button>
         <Button variant="contained" onClick={() => post_method("/dispense", {"mass": mass})} sx={{ width: 250, height: 60 }} color = "secondary"> DISPENSE <DispenseIcon style={{ marginLeft: 11 }}/></Button>
@@ -113,10 +113,10 @@ return (
       </Stack>
 
       <Stack direction="row" spacing={2} marginBottom={2}>
-        <Button variant="contained" onClick={()=> get_method("/get_sample_data")} color="secondary"> Get Sample Data<InfoIcon style={{ marginLeft: 11 }}/></Button>
-        <Button variant="contained" onClick={()=> get_method("/status")} color="success" > State <StateIcon style={{ marginLeft: 11 }}/></Button>
+        <Button variant="contained" onClick={()=> get_method("/get_sample_data")} sx={{ width: 250, height: 40 }} color="secondary"> Get Sample Data<InfoIcon style={{ marginLeft: 11 }}/></Button>
+        <Button variant="contained" onClick={()=> get_method("/status")} sx={{ width: 250, height: 40 }} color="success" > State <StateIcon style={{ marginLeft: 11 }}/></Button>
       </Stack>
-      </Stack>
+      
     </Paper>
 );
 }

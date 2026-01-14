@@ -12,17 +12,10 @@ import {
 } from "@mui/material";
 import { useRef } from "react";
 import { ThemeProvider } from "@mui/material/styles";
-import OpenDoorIcon from "@mui/icons-material/MeetingRoom"; 
-import CloseDoorIcon from "@mui/icons-material/NoMeetingRoom"; 
-import OpenSideDoorsIcon from "@mui/icons-material/DriveFileMoveRtl";
-import CloseSideDoorsIcon from "@mui/icons-material/DriveFileMove";
-import LockIcon from "@mui/icons-material/LockOutline";
-import UnlockIcon from "@mui/icons-material/LockOpen";
-import BalanceIcon from "@mui/icons-material/Balance";
-import StateIcon from "@mui/icons-material/MonitorHeart";
-import InfoIcon from "@mui/icons-material/InfoOutline";
-import TareIcon from "@mui/icons-material/Adjust";
-import DispenseIcon from "@mui/icons-material/Grain";
+import OpenDoorIcon from "@mui/icons-material/ArrowCircleUp"; 
+import CloseDoorIcon from "@mui/icons-material/ArrowCircleDown"; 
+import OpenSideDoorsIcon from "@mui/icons-material/Vibration";
+import CloseSideDoorsIcon from "@mui/icons-material/StopCircle";
 
 
 
@@ -83,8 +76,8 @@ return (
         <Button variant="contained" onClick={() => get_method("/lower_lift")}sx={{ width: 400, height: 50 }}>Lift Down <CloseDoorIcon style={{ marginLeft: 11 }}/></Button>
       </Stack>
       <Stack direction="row" spacing={2} marginBottom={2}>
-        <Button variant="contained" onClick={() => get_method("/turn_ultrasound_bath_on")}sx={{ width: 400, height: 200 }}>Ultrasound ON <OpenSideDoorsIcon style={{ marginLeft: 11 }}/></Button>
-        <Button variant="contained" onClick={() => get_method("/turn_ultrasound_bath_off")}sx={{ width: 400, height: 200 }}>Ultrasound OFF <CloseSideDoorsIcon style={{ marginLeft: 11 }}/></Button>
+        <Button variant="contained" onClick={() => get_method("/turn_ultrasound_bath_on")}sx={{ width: 400, height: 50 }} color="secondary">Ultrasound ON <OpenSideDoorsIcon style={{ marginLeft: 11 }}/></Button>
+        <Button variant="contained" onClick={() => get_method("/turn_ultrasound_bath_off")}sx={{ width: 400, height: 50 }} color="secondary">Ultrasound OFF <CloseSideDoorsIcon style={{ marginLeft: 11 }}/></Button>
       </Stack>
       <Stack direction="column" spacing={2} marginBottom={2}>
               <TextField
