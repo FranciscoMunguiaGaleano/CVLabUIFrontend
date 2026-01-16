@@ -20,11 +20,6 @@ import FillIcon from "@mui/icons-material/LocalDrink";
 import BinIcon from "@mui/icons-material/DeleteOutline";
 import HomeIcon from "@mui/icons-material/Home"
 
-
-
-
-
-
 export default function LiquidsDispenserPage() {
 const [liquid_id, setLiquidid] = useState("Water");
 const [volume, setVolume] = useState(1.0);
