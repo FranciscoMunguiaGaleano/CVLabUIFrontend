@@ -79,6 +79,15 @@ const post_method = (endpoint, data) => {
 
 return (
     <Paper style={{ padding: 30, maxWidth: 500, margin: "0px auto" }} elevation={0}>
+      <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '5vh'}}>
+            <Stack direction="column" spacing={2} marginBottom={2}>
+              <h2>Solids Dispenser Control</h2>
+            </Stack>
+          </div>
       <Stack direction="row" spacing={2} marginBottom={2}>
         <Button variant="contained" onClick={() => get_method("/open_front_door")}sx={{ width: 250, height: 60 }} > Open Front Door <OpenDoorIcon style={{ marginLeft: 11 }}/> </Button>
         <Button variant="contained" onClick={() => get_method("/close_front_door")}sx={{ width: 250, height: 60 }}>Close Front Door <CloseDoorIcon style={{ marginLeft: 11 }}/></Button>

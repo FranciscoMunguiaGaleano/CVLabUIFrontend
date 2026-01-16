@@ -77,6 +77,15 @@ const post_method = (endpoint, data) => {
 
 return (
     <Paper style={{ padding: 30, maxWidth: 500, margin: "0px auto" }} elevation={0}>
+      <div style={{
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      height: '5vh'}}>
+      <Stack direction="column" spacing={2} marginBottom={2}>
+        <h2>Capper Control</h2>
+      </Stack>
+    </div>
       <Stack direction="row" spacing={2} marginBottom={2}>
         <Button variant="contained" onClick={() => get_method("/uncap")}sx={{ width: 400, height: 50 }} > Decap <UncapIcon style={{ marginLeft: 11 }}/> </Button>
         <Button variant="contained" onClick={() => get_method("/cap")}sx={{ width: 400, height: 50 }}>  Cap <CapIcon style={{ marginLeft: 11 }}/></Button>

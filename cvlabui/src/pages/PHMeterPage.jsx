@@ -53,6 +53,15 @@ const get_method = (endpoint, payload = null) => {
 
 return (
     <Paper style={{ padding: 30, maxWidth: 500, margin: "0px auto" }} elevation={0}>
+      <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '5vh'}}>
+            <Stack direction="column" spacing={2} marginBottom={2}>
+              <h2>pH Meter Control</h2>
+            </Stack>
+          </div>
       <Stack direction="column" spacing={2} marginBottom={2}>
               <TextField
                 label=""
