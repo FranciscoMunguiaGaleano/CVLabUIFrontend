@@ -23,6 +23,8 @@ import StateIcon from "@mui/icons-material/MonitorHeart";
 import InfoIcon from "@mui/icons-material/InfoOutline";
 import TareIcon from "@mui/icons-material/Adjust";
 import DispenseIcon from "@mui/icons-material/Grain";
+import CWIcon from "@mui/icons-material/RotateRight"; 
+import CCWIcon from "@mui/icons-material/RotateLeft"; 
 
 
 
@@ -31,9 +33,11 @@ import DispenseIcon from "@mui/icons-material/Grain";
 
 export default function SolidsDispenserPage() {
 
+const [thinking, setThinking] = useState(false);
 const [mass, setMass] = useState("");
 const [log_text, setState] = useState("[INFO] Waiting for instructions...");
 const get_method = (endpoint, payload = null) => {
+    setThinking(true);
     fetch(`http://localhost:8080/api/v1/quantos${endpoint}`, 
     {
       method: "GET",
@@ -51,11 +55,13 @@ const get_method = (endpoint, payload = null) => {
     .catch((error) => {
       console.error(error);
       setState({ error: error.message });
-    });
+    }).finally(() => {
+    setThinking(false);
+    })
   };
 
 const post_method = (endpoint, data) => {
-
+  setThinking(true);
   fetch(`http://localhost:8080/api/v1/quantos${endpoint}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -73,7 +79,9 @@ const post_method = (endpoint, data) => {
     .catch((error) => {
       console.error(error);
       setState({ error: error.message });
-    });
+    }).finally(() => {
+    setThinking(false);
+    })
 };
 
 
@@ -113,12 +121,24 @@ return (
         <Button variant="contained" onClick={() => get_method("/tare_balance")} sx={{ width: 250, height: 60 }} color = "secondary"> TARE <TareIcon style={{ marginLeft: 11 }}/></Button>
         <Button variant="contained" onClick={() => post_method("/dispense", {"mass": mass})} sx={{ width: 250, height: 60 }} color = "secondary"> DISPENSE <DispenseIcon style={{ marginLeft: 11 }}/></Button>
       </Stack>
+
+      <Stack direction="row" spacing={2} marginBottom={2}>
+        <Button variant="contained" onClick={() => post_method("/set_tower_position",{pos:1})}sx={{ width: 250, height: 60 }}color="inherit">Tower <CWIcon style={{ marginLeft: 11 }}/></Button>
+        <Button variant="contained" onClick={() => post_method("/set_tower_position",{pos:2})}sx={{ width: 250, height: 60 }}color="inherit">Tower <CCWIcon style={{ marginLeft: 11 }}/></Button>
+      </Stack>
+
       <Stack direction="column" spacing={2} marginBottom={2}>
         <TextField
           label=""
           value={log_text}
           fullWidth
         />
+        {thinking && (
+                                      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                                      <CircularProgress size={18} />
+                                      <Typography variant="body2">Executing Instruction…</Typography>
+                                      </Box>
+                                    )}
       </Stack>
 
       <Stack direction="row" spacing={2} marginBottom={2}>

@@ -123,12 +123,11 @@ const columns = [
       <Typography variant="h4" gutterBottom>
         Jog Controls Arm
       </Typography>
-
       <Stack direction="row" spacing={2} marginBottom={2}>
-        <Button variant="contained" onClick={() => jog("y", "+")} sx={{ width: 100, height: 100, fontSize: 22 }}>
+        <Button variant="contained" onClick={() => jog("y", "+")} sx={{ width: 100, height: 100 }}>
           Y+
         </Button>
-        <Button variant="contained" onClick={() => jog("z", "+")} sx={{ width: 100, height: 100, fontSize: 22 }}>
+        <Button variant="contained" onClick={() => jog("z", "+")} sx={{ width: 100, height: 100 }}>
           Z+
         </Button>
         <Button variant="outlined" onClick={() => setStep((prev) => prev + stepIncrease)} sx={{ width: 100, height: 100, fontSize: 22 }}>+</Button>
