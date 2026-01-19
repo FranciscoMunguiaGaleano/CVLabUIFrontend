@@ -134,11 +134,11 @@ return (
           fullWidth
         />
         {thinking && (
-                                      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                                      <CircularProgress size={18} />
-                                      <Typography variant="body2">Executing Instruction…</Typography>
-                                      </Box>
-                                    )}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <CircularProgress size={18} />
+          <Typography variant="body2">Executing Instruction…</Typography>
+          </Box>
+        )}
       </Stack>
 
       <Stack direction="row" spacing={2} marginBottom={2}>

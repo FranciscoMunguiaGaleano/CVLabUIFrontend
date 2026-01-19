@@ -5,11 +5,28 @@ import { DataGrid } from "@mui/x-data-grid";
 import {
   Select,
   FormControl,
-  InputLabel
+  InputLabel,
+  CircularProgress,
 } from "@mui/material";
 
+import HomeIcon from "@mui/icons-material/Home";
+import NorthIcon from "@mui/icons-material/North";
+import SouthIcon from "@mui/icons-material/South";
+import EastIcon from "@mui/icons-material/East"
+import WestIcon from "@mui/icons-material/West"
+import NortheastIcon from "@mui/icons-material/NorthEast"
+import SouthwestIcon from "@mui/icons-material/SouthWest"
+import PlusIcon from "@mui/icons-material/AddCircleOutline"
+import MinusIcon from "@mui/icons-material/RemoveCircleOutline"
+import StateIcon from "@mui/icons-material/MonitorHeart"
+import Icon from "@mui/icons-material/Home"
 
 export default function ArmPage() {
+  const [thinking, setThinking] = useState(false);
+  const [X_axis, setXaxis] =useState(0.0);
+  const [Y_axis, setYaxis] =useState(0.0);
+  const [Z_axis, setZaxis] =useState(0.0);
+  const [GRIPPER, setGripper] =useState(0);
   const [gcode, setGcode] = useState("");
   const STEP_OPTIONS = [0.1, 0.5, 1, 5, 10, 50, 100];
   const [step, setStep] = useState(0.1);
@@ -19,25 +36,69 @@ export default function ArmPage() {
   const [routines, setRoutines] = useState([]);
   const [selectedRoutine, setSelectedRoutine] = useState("");
   const [rows, setRows] = useState([]);
+  const [log_text, setState] = useState("[INFO] Waiting for instructions...");
 
 
-  const jog = useCallback((axis, direction) => {
+const jog = useCallback(async (axis, direction) => {
   const signedStep = direction === "+" ? step : -step;
-
-  fetch(`http://localhost:8080/api/v1/robot/arm/jog_${axis}`, {
+  setThinking(true);
+  return fetch(`http://localhost:8080/api/v1/robot/arm/jog_${axis}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ step: signedStep }),
-  }).catch(console.error);
+  }).finally(() => {setThinking(false);})
+  
 }, [step]);
 
-  const call = (endpoint, payload = null) => {
-    fetch(`http://localhost:8080/api/v1/robot/arm${endpoint}`, {
+  const call = async (endpoint, payload = null) => {
+    setThinking(true);
+    return fetch(`http://localhost:8080/api/v1/robot/arm${endpoint}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: payload ? JSON.stringify(payload) : null,
-    }).catch(console.error);
+    }).then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then((result) => {
+      setState(JSON.stringify(result["message"]));
+    })
+    .catch((error) => {
+      console.error(error);
+      setState({ error: error.message });
+    }).finally(() => {
+    setThinking(false);
+    })
   };
+
+const state = async (endpoint, payload = null) => {
+  setThinking(true);
+  return fetch(`http://localhost:8080/api/v1/robot/arm${endpoint}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: payload ? JSON.stringify(payload) : null,
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then((result) => {
+      setXaxis(result["X"]);
+      setYaxis(result["Y"]);
+      setZaxis(result["Z"]);
+      setGripper(result["GRIPPER"]);
+      return result;
+    })
+    .finally(() => setThinking(false));
+};
+const jogAndUpdate = async (axis, dir) => {
+  await jog(axis, dir);
+  await state("/status");
+};
   
 useEffect(() => {
   if (!teachPendant) return;
@@ -47,23 +108,29 @@ useEffect(() => {
 
     switch (e.key) {
       case "ArrowUp":
-        jog("y", "+");
+        jogAndUpdate("y", "+");
         break;
+
       case "ArrowDown":
-        jog("y", "-");
+        jogAndUpdate("y", "-");
         break;
+
       case "ArrowRight":
-        jog("x", "+");
+        jogAndUpdate("x", "+");
         break;
+
       case "ArrowLeft":
-        jog("x", "-");
+        jogAndUpdate("x", "-");
         break;
+
       case "+":
         setStep((s) => s + stepIncrease);
         break;
+
       case "-":
         setStep((s) => Math.max(0, s - stepIncrease));
         break;
+
       default:
         break;
     }
@@ -71,7 +138,8 @@ useEffect(() => {
 
   window.addEventListener("keydown", handler);
   return () => window.removeEventListener("keydown", handler);
-}, [teachPendant, stepIncrease, jog]);
+}, [teachPendant, stepIncrease, jog, state]);
+
 
 useEffect(() => {
   if (!teachMode) return;
@@ -115,7 +183,7 @@ const columns = [
 
 
   return (
-    <Paper style={{ padding: 50, maxWidth: 1000, margin: "0px auto" }} elevation={3}>
+  <Paper style={{ padding: 50, maxWidth: 1000, margin: "0px auto" }} elevation={3}>
   <Grid container spacing={4}>
 
     {/* LEFT: Jog Control Panel */}
@@ -124,13 +192,13 @@ const columns = [
         Jog Controls Arm
       </Typography>
       <Stack direction="row" spacing={2} marginBottom={2}>
-        <Button variant="contained" onClick={() => jog("y", "+")} sx={{ width: 100, height: 100 }}>
-          Y+
+        <Button variant="contained" onClick={() => jog("y", "+")} sx={{ width: 80, height: 80 }}>
+          Y<NorthIcon style={{ marginLeft: 11 }}/>
         </Button>
-        <Button variant="contained" onClick={() => jog("z", "+")} sx={{ width: 100, height: 100 }}>
-          Z+
+        <Button variant="contained" onClick={() => jog("z", "+")} sx={{ width: 80, height: 80 }}>
+          Z<NortheastIcon style={{ marginLeft: 11 }}/>
         </Button>
-        <Button variant="outlined" onClick={() => setStep((prev) => prev + stepIncrease)} sx={{ width: 100, height: 100, fontSize: 22 }}>+</Button>
+        <Button variant="contained" onClick={() => setStep((prev) => prev + stepIncrease)} sx={{ width: 80, height: 80, fontSize: 22 }} color= "inherit"><PlusIcon/></Button>
         <TextField
           select
           label="Step Increment"
@@ -146,9 +214,9 @@ const columns = [
       </Stack>
 
       <Stack direction="row" spacing={2} marginBottom={2}>
-        <Button variant="contained" onClick={() => jog("x", "-")} sx={{ width: 100, height: 100 }}>X-</Button>
-        <Button variant="contained" onClick={() => call("/home")}sx={{ width: 100, height: 100 }}>Home</Button>
-        <Button variant="contained" onClick={() => jog("x", "+")} sx={{ width: 100, height: 100 }}>X+</Button>
+        <Button variant="contained" onClick={async () => {await jog("x", "-"); await state("/status")}} sx={{ width: 80, height: 80 }}>X<WestIcon style={{ marginLeft: 11 }}/></Button>
+        <Button variant="contained" onClick={async () => {await call("/home"); await state("/status")}}sx={{ width: 80, height: 80 }}><HomeIcon/></Button>
+        <Button variant="contained" onClick={async () => {await jog("x", "+"); await state("/status")}} sx={{ width: 80, height: 80 }}>X<EastIcon style={{ marginLeft: 11 }}/></Button>
         <TextField
           label="Current Step (mm)"
           type="number"
@@ -159,15 +227,29 @@ const columns = [
       </Stack>
 
       <Stack direction="row" spacing={2} marginBottom={2}>
-        <Button variant="contained" onClick={() => jog("y", "-")} sx={{ width: 100, height: 100 }}>Y-</Button>
-        <Button variant="contained" onClick={() => jog("z", "-")} sx={{ width: 100, height: 100 }}>Z-</Button>
-        <Button variant="outlined" onClick={() => setStep((prev) => Math.max(0, prev - stepIncrease))} sx={{ width: 100, height: 100, fontSize: 22 }}>−</Button>
+        <Button variant="contained" onClick={() => jog("y", "-")} sx={{ width: 80, height: 80 }}>Y<SouthIcon style={{ marginLeft: 11 }}/></Button>
+        <Button variant="contained" onClick={() => jog("z", "-")} sx={{ width: 80, height: 80 }}>Z<SouthwestIcon style={{ marginLeft: 11 }}/></Button>
+        <Button variant="contained" onClick={() => setStep((prev) => Math.max(0, prev - stepIncrease))} sx={{ width: 80, height: 80, fontSize: 22 }} color="inherit"><MinusIcon/></Button>
         
       </Stack>
-
-      <Stack direction="row" spacing={7} marginBottom={2}>
-        <Button variant="contained" sx={{ width: 138, height: 80 }}>Open Gripper</Button>
-        <Button variant="contained" sx={{ width: 138, height: 80 }}>Close Gripper</Button>
+      
+      {/*Position monitor*/ }
+      <Stack direction="column" spacing={2} marginBottom={2}>
+        {thinking && (
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <CircularProgress size={18} />
+                <Typography variant="body2">Executing Instruction…</Typography>
+                </Box>
+              )}
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+        <Typography variant="body3">X: {X_axis} Y: {Y_axis} Z: {Z_axis} Gripper: {GRIPPER}</Typography>
+        </Box>
+      </Stack>
+      
+      <Stack direction="row" spacing={1} marginBottom={2}>
+        <Button variant="contained" sx={{ width: 160, height: 50 }}>Open Gripper</Button>
+        <Button variant="contained" onClick={() => {call("/status"); state("/status")}}sx={{ width: 100, height: 50 }}><StateIcon/></Button>
+        <Button variant="contained" sx={{ width: 160, height: 50 }}>Close Gripper</Button>
       </Stack>
 
       <Stack direction="row" spacing={2}>
@@ -179,7 +261,6 @@ const columns = [
         />
         <Button variant="contained" color="success">Send</Button>
       </Stack>
-
       <Stack direction="row" spacing={4} alignItems="center">
         <FormControlLabel
           control={
@@ -202,7 +283,7 @@ const columns = [
           label="Teach Pendant"
         />
       </Stack>
-
+      
     </Grid>
 
     {/* RIGHT: Instruction Image */}
@@ -220,7 +301,7 @@ const columns = [
         }}
       />
     </Grid>
-  </Grid>
+    </Grid>
     {/* Routines visualiser */}
       {teachMode && (
           <Paper sx={{ mt: 4, p: 2 }}>
@@ -260,6 +341,14 @@ const columns = [
             </div>
           </Paper>
         )}
+        {/*INFO text box*/}
+        <Stack direction="column" spacing={2} marginBottom={2}>
+              <TextField
+                label=""
+                value={log_text}
+                fullWidth
+              />
+      </Stack>
 </Paper>
 
   );
