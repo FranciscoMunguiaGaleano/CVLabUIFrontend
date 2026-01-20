@@ -46,7 +46,19 @@ const jog = useCallback(async (axis, direction) => {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ step: signedStep }),
-  }).finally(() => {setThinking(false);})
+  }).then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then((result) => {
+      setState(JSON.stringify(result["message"]));
+    })
+    .catch((error) => {
+      console.error(error);
+      setState(JSON.stringify({error: error.message}));
+    }).finally(() => {setThinking(false)})
   
 }, [step]);
 
@@ -90,10 +102,9 @@ const state = async (endpoint, payload = null) => {
       setXaxis(result["X"]);
       setYaxis(result["Y"]);
       setZaxis(result["Z"]);
-      setGripper(result["GRIPPER"]);
       return result;
     })
-    .finally(() => setThinking(false));
+    .finally(() => {setThinking(false);});
 };
 const jogAndUpdate = async (axis, dir) => {
   await jog(axis, dir);
@@ -108,11 +119,11 @@ useEffect(() => {
 
     switch (e.key) {
       case "ArrowUp":
-        jogAndUpdate("y", "+");
+        jogAndUpdate("y", "-");
         break;
 
       case "ArrowDown":
-        jogAndUpdate("y", "-");
+        jogAndUpdate("y", "+");
         break;
 
       case "ArrowRight":
@@ -192,12 +203,8 @@ const columns = [
         Jog Controls Arm
       </Typography>
       <Stack direction="row" spacing={2} marginBottom={2}>
-        <Button variant="contained" onClick={() => jog("y", "+")} sx={{ width: 80, height: 80 }}>
-          Y<NorthIcon style={{ marginLeft: 11 }}/>
-        </Button>
-        <Button variant="contained" onClick={() => jog("z", "+")} sx={{ width: 80, height: 80 }}>
-          Z<NortheastIcon style={{ marginLeft: 11 }}/>
-        </Button>
+        <Button variant="contained" onClick={async () => {await jog("y", "-"); await state("/status")}} sx={{ width: 80, height: 80 }}>Y<NorthIcon style={{ marginLeft: 11 }}/></Button>
+        <Button variant="contained" onClick={async () => {await jog("z", "+"); await state("/status")}} sx={{ width: 80, height: 80 }}>Z<NortheastIcon style={{ marginLeft: 11 }}/></Button>
         <Button variant="contained" onClick={() => setStep((prev) => prev + stepIncrease)} sx={{ width: 80, height: 80, fontSize: 22 }} color= "inherit"><PlusIcon/></Button>
         <TextField
           select
@@ -227,8 +234,8 @@ const columns = [
       </Stack>
 
       <Stack direction="row" spacing={2} marginBottom={2}>
-        <Button variant="contained" onClick={() => jog("y", "-")} sx={{ width: 80, height: 80 }}>Y<SouthIcon style={{ marginLeft: 11 }}/></Button>
-        <Button variant="contained" onClick={() => jog("z", "-")} sx={{ width: 80, height: 80 }}>Z<SouthwestIcon style={{ marginLeft: 11 }}/></Button>
+        <Button variant="contained" onClick={async () => {await jog("y", "+"); await state("/status")}} sx={{ width: 80, height: 80 }}>Y<SouthIcon style={{ marginLeft: 11 }}/></Button>
+        <Button variant="contained" onClick={async () => {await jog("z", "-"); await state("/status")}}>Z<SouthwestIcon style={{ marginLeft: 11 }}/></Button>
         <Button variant="contained" onClick={() => setStep((prev) => Math.max(0, prev - stepIncrease))} sx={{ width: 80, height: 80, fontSize: 22 }} color="inherit"><MinusIcon/></Button>
         
       </Stack>
@@ -247,9 +254,9 @@ const columns = [
       </Stack>
       
       <Stack direction="row" spacing={1} marginBottom={2}>
-        <Button variant="contained" sx={{ width: 160, height: 50 }}>Open Gripper</Button>
-        <Button variant="contained" onClick={() => {call("/status"); state("/status")}}sx={{ width: 100, height: 50 }}><StateIcon/></Button>
-        <Button variant="contained" sx={{ width: 160, height: 50 }}>Close Gripper</Button>
+        <Button variant="contained" onClick={() => {call("/open_gripper"); setGripper(1)}} sx={{ width: 160, height: 50 }}>Open Gripper</Button>
+        <Button variant="contained" onClick={() => {state("/status")}}sx={{ width: 100, height: 50 }}><StateIcon/></Button>
+        <Button variant="contained" onClick={() => {call("/close_gripper"); setGripper(0)}} sx={{ width: 160, height: 50 }}>Close Gripper</Button>
       </Stack>
 
       <Stack direction="row" spacing={2}>
