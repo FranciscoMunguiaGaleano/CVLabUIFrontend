@@ -99,6 +99,7 @@ const state = async (endpoint, payload = null) => {
       return response.json();
     })
     .then((result) => {
+      setState(JSON.stringify(result["message"]));
       setXaxis(result["X"]);
       setYaxis(result["Y"]);
       setZaxis(result["Z"]);
@@ -266,7 +267,7 @@ const columns = [
           onChange={(e) => setGcode(e.target.value)}
           fullWidth
         />
-        <Button variant="contained" color="success">Send</Button>
+        <Button variant="contained" onClick={async () => {await call("/gcode",{"gcode": gcode}); await state("/status")}} color="success">Send</Button>
       </Stack>
       <Stack direction="row" spacing={4} alignItems="center">
         <FormControlLabel
