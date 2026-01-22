@@ -237,7 +237,7 @@ const columns = [
       <Stack direction="row" spacing={2} marginBottom={2}>
         <Button variant="contained" onClick={async () => {await jog("y", "+"); await state("/status")}} sx={{ width: 80, height: 80 }}>Y<SouthIcon style={{ marginLeft: 11 }}/></Button>
         <Button variant="contained" onClick={async () => {await jog("z", "-"); await state("/status")}}>Z<SouthwestIcon style={{ marginLeft: 11 }}/></Button>
-        <Button variant="contained" onClick={() => setStep((prev) => Math.max(0, prev - stepIncrease))} sx={{ width: 80, height: 80, fontSize: 22 }} color="inherit"><MinusIcon/></Button>
+        <Button variant="contained" onClick={() => setStep = ((prev) => Math.max(0, prev - stepIncrease))} sx={{ width: 80, height: 80, fontSize: 22 }} color="inherit"><MinusIcon/></Button>
         
       </Stack>
       
@@ -347,8 +347,23 @@ const columns = [
                 }}
               />
             </div>
+        <Stack direction="row" spacing={1} marginBottom={2}>
+          <Button variant="contained"  sx={{ width: 80, height: 80 }}> <PlusIcon/></Button>
+          <Button variant="contained"  sx={{ width: 80, height: 80 }}><MinusIcon/></Button>
+          <Button variant="contained"  sx={{ width: 80, height: 80 }}> Undo </Button>
+          <Button variant="contained"  sx={{ width: 80, height: 80 }}> Redo </Button>
+          <Button variant="contained"  sx={{ width: 80, height: 80 }}> Save </Button>
+       </Stack>
+       <Stack direction="row" spacing={1} marginBottom={2}>
+          <Button variant="contained"  sx={{ width: 80, height: 80 }}> step + </Button>
+          <Button variant="contained"  sx={{ width: 80, height: 80 }}> step -</Button>
+          <Button variant="contained"  sx={{ width: 80, height: 80 }}> play from here </Button>
+          <Button variant="contained"  sx={{ width: 80, height: 80 }}> play / pause </Button>
+          <Button variant="contained"  sx={{ width: 80, height: 80 }}> stop </Button>
+       </Stack>
           </Paper>
         )}
+        
         {/*INFO text box*/}
         <Stack direction="column" spacing={2} marginBottom={2}>
               <TextField
