@@ -20,6 +20,14 @@ import PlusIcon from "@mui/icons-material/AddCircleOutline"
 import MinusIcon from "@mui/icons-material/RemoveCircleOutline"
 import StateIcon from "@mui/icons-material/MonitorHeart"
 import Icon from "@mui/icons-material/Home"
+import SaveIcon from "@mui/icons-material/Save"
+import UndoIcon from "@mui/icons-material/Undo"
+import RedoIcon from "@mui/icons-material/Redo"
+import PlayIcon from "@mui/icons-material/PlayArrow"
+import FFIcon from "@mui/icons-material/SkipNext"
+import FRIcon from "@mui/icons-material/SkipPrevious"
+import StopIcon from "@mui/icons-material/Stop"
+import PauseIcon from "@mui/icons-material/Pause"
 
 export default function ArmPage() {
   const [thinking, setThinking] = useState(false);
@@ -348,18 +356,18 @@ const columns = [
               />
             </div>
         <Stack direction="row" spacing={1} marginBottom={2}>
-          <Button variant="contained"  sx={{ width: 80, height: 80 }}> <PlusIcon/></Button>
-          <Button variant="contained"  sx={{ width: 80, height: 80 }}><MinusIcon/></Button>
-          <Button variant="contained"  sx={{ width: 80, height: 80 }}> Undo </Button>
-          <Button variant="contained"  sx={{ width: 80, height: 80 }}> Redo </Button>
-          <Button variant="contained"  sx={{ width: 80, height: 80 }}> Save </Button>
+          <Button variant="contained"  sx={{ width: 50, height: 80 }}> <PlusIcon/></Button>
+          <Button variant="contained"  sx={{ width: 50, height: 80 }}><MinusIcon/></Button>
+          <Button variant="contained"  sx={{ width: 50, height: 80 }}> <UndoIcon/> </Button>
+          <Button variant="contained"  sx={{ width: 50, height: 80 }}> <RedoIcon/> </Button>
+          <Button variant="contained"  sx={{ width: 50, height: 80 }} color="error"> <SaveIcon/> </Button>
        </Stack>
        <Stack direction="row" spacing={1} marginBottom={2}>
-          <Button variant="contained"  sx={{ width: 80, height: 80 }}> step + </Button>
-          <Button variant="contained"  sx={{ width: 80, height: 80 }}> step -</Button>
-          <Button variant="contained"  sx={{ width: 80, height: 80 }}> play from here </Button>
-          <Button variant="contained"  sx={{ width: 80, height: 80 }}> play / pause </Button>
-          <Button variant="contained"  sx={{ width: 80, height: 80 }}> stop </Button>
+          <Button variant="contained"  sx={{ width: 50, height: 50 }} color="secondary"> <FRIcon/> </Button>
+          <Button variant="contained"  sx={{ width: 50, height: 50 }} color="secondary"> <FFIcon/> </Button>
+          <Button variant="contained"  sx={{ width: 50, height: 50 }} color="secondary"> <PlayIcon/> </Button>
+          <Button variant="contained"  sx={{ width: 50, height: 50 }} color="secondary"> <PauseIcon/> </Button>
+          <Button variant="contained"  sx={{ width: 50, height: 50 }} color="secondary"> <StopIcon/> </Button>
        </Stack>
           </Paper>
         )}
