@@ -356,11 +356,11 @@ const columns = [
               />
             </div>
         <Stack direction="row" spacing={1} marginBottom={2}>
-          <Button variant="contained"  sx={{ width: 50, height: 80 }}> <PlusIcon/></Button>
-          <Button variant="contained"  sx={{ width: 50, height: 80 }}><MinusIcon/></Button>
-          <Button variant="contained"  sx={{ width: 50, height: 80 }}> <UndoIcon/> </Button>
-          <Button variant="contained"  sx={{ width: 50, height: 80 }}> <RedoIcon/> </Button>
-          <Button variant="contained"  sx={{ width: 50, height: 80 }} color="error"> <SaveIcon/> </Button>
+          <Button variant="contained"  sx={{ width: 50, height: 70 }}> <PlusIcon/></Button>
+          <Button variant="contained"  sx={{ width: 50, height: 70 }}> <MinusIcon/></Button>
+          <Button variant="contained"  sx={{ width: 50, height: 70 }}> <UndoIcon/> </Button>
+          <Button variant="contained"  sx={{ width: 50, height: 70 }}> <RedoIcon/> </Button>
+          <Button variant="contained"  sx={{ width: 50, height: 70 }} color="error"> <SaveIcon/> </Button>
        </Stack>
        <Stack direction="row" spacing={1} marginBottom={2}>
           <Button variant="contained"  sx={{ width: 50, height: 50 }} color="secondary"> <FRIcon/> </Button>
