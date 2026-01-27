@@ -45,6 +45,10 @@ export default function ArmPage() {
   const [selectedRoutine, setSelectedRoutine] = useState("");
   const [rows, setRows] = useState([]);
   const [log_text, setState] = useState("[INFO] Waiting for instructions...");
+  const [selectedRowId, setSelectedRowId] = useState(null);
+  const [selectionModel, setSelectionModel] = useState([]);
+
+
 
 
 const jog = useCallback(async (axis, direction) => {
@@ -196,10 +200,40 @@ const loadRoutine = (name) => {
 
 const columns = [
   { field: "id", headerName: "#", width: 60 },
-  { field: "x", headerName: "X (mm)", editable: true, width: 120 },
-  { field: "y", headerName: "Y (mm)", editable: true, width: 120 },
-  { field: "z", headerName: "Z (mm)", editable: true, width: 120 }
+  { field: "x", headerName: "X (mm)", editable: true, width: 100 },
+  { field: "y", headerName: "Y (mm)", editable: true, width: 100 },
+  { field: "z", headerName: "Z (mm)", editable: true, width: 100 }
 ];
+
+const addRow = () => {
+  setRows(prevRows => {
+    const nextId =
+      prevRows.length === 0
+        ? 0
+        : Math.max(...prevRows.map(r => r.id)) + 1;
+
+    return [
+      ...prevRows,
+      {
+        id: nextId,
+        x: X_axis,
+        y: Y_axis,
+        z: Z_axis
+      }
+    ];
+  });
+};
+
+const removeSelectedRow = () => {
+  if (selectionModel.length === 0) return; // nothing selected
+
+  setRows(prev =>
+    prev.filter(row => row.id !== Number(selectionModel[0]))
+  );
+
+  setSelectionModel([]);
+};
+
 
 
   return (
@@ -346,18 +380,24 @@ const columns = [
               <DataGrid
                 rows={rows}
                 columns={columns}
-                disableRowSelectionOnClick
+                checkboxSelection
+                selectionModel={selectionModel}
+                onSelectionModelChange={(newSelection) => {
+                  setSelectionModel(newSelection);
+                  setSelectedRowId(newSelection.length ? Number(newSelection[0]) : null);
+                }}
+                disableSelectionOnClick
                 processRowUpdate={(newRow) => {
                   setRows((prev) =>
-                    prev.map((r) => (r.id === newRow.id ? newRow : r))
+                  prev.map((r) => (r.id === newRow.id ? newRow : r))
                   );
                   return newRow;
                 }}
               />
             </div>
         <Stack direction="row" spacing={1} marginBottom={2}>
-          <Button variant="contained"  sx={{ width: 50, height: 70 }}> <PlusIcon/></Button>
-          <Button variant="contained"  sx={{ width: 50, height: 70 }}> <MinusIcon/></Button>
+          <Button variant="contained"  sx={{ width: 50, height: 70 }} onClick={addRow}> <PlusIcon/></Button>
+          <Button variant="contained"  sx={{ width: 50, height: 70 }} onClick={removeSelectedRow}> <MinusIcon/></Button>
           <Button variant="contained"  sx={{ width: 50, height: 70 }}> <UndoIcon/> </Button>
           <Button variant="contained"  sx={{ width: 50, height: 70 }}> <RedoIcon/> </Button>
           <Button variant="contained"  sx={{ width: 50, height: 70 }} color="error"> <SaveIcon/> </Button>
