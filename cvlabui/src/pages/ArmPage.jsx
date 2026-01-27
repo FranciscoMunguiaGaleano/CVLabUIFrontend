@@ -225,14 +225,9 @@ const addRow = () => {
 };
 
 const removeSelectedRow = () => {
-  if (selectionModel.length === 0) return; // nothing selected
-
-  setRows(prev =>
-    prev.filter(row => row.id !== Number(selectionModel[0]))
-  );
-
-  setSelectionModel([]);
+  setRows(prevRows => prevRows.length ? prevRows.slice(0, -1) : prevRows);
 };
+
 
 
 
@@ -375,28 +370,22 @@ const removeSelectedRow = () => {
               </Select>
             </FormControl>
 
-            {/* Excel-like grid */}
-            <div style={{ height: 300, width: "100%" }}>
-              <DataGrid
-                rows={rows}
-                columns={columns}
-                checkboxSelection
-                selectionModel={selectionModel}
-                onSelectionModelChange={(newSelection) => {
-                  setSelectionModel(newSelection);
-                  setSelectedRowId(newSelection.length ? Number(newSelection[0]) : null);
-                }}
-                disableSelectionOnClick
-                processRowUpdate={(newRow) => {
-                  setRows((prev) =>
-                  prev.map((r) => (r.id === newRow.id ? newRow : r))
-                  );
-                  return newRow;
-                }}
-              />
-            </div>
+          {/* Excel-like grid */}
+          <div style={{ height: 300, width: "100%" }}>
+            <DataGrid
+              rows={rows}
+              columns={columns}
+              disableSelectionOnClick // prevents cell click from trying to select
+              processRowUpdate={(newRow) => {
+                setRows(prev =>
+                  prev.map(r => (r.id === newRow.id ? newRow : r))
+                );
+                return newRow;
+              }}
+            />
+          </div>
         <Stack direction="row" spacing={1} marginBottom={2}>
-          <Button variant="contained"  sx={{ width: 50, height: 70 }} onClick={addRow}> <PlusIcon/></Button>
+          <Button variant="contained"  sx={{ width: 50, height: 70 }} onClick={addRow}> <PlusIcon/> </Button>
           <Button variant="contained"  sx={{ width: 50, height: 70 }} onClick={removeSelectedRow}> <MinusIcon/></Button>
           <Button variant="contained"  sx={{ width: 50, height: 70 }}> <UndoIcon/> </Button>
           <Button variant="contained"  sx={{ width: 50, height: 70 }}> <RedoIcon/> </Button>
