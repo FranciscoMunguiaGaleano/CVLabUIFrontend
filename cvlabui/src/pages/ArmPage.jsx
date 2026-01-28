@@ -1,4 +1,4 @@
-import React, { useState , useEffect, useCallback} from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Button, Stack, Typography, TextField, Paper, Grid, Box , MenuItem , FormControlLabel, Switch} from "@mui/material";
 import instruction from "../imgs/instructions/gantry.png";
 import { DataGrid } from "@mui/x-data-grid";
@@ -26,7 +26,7 @@ import RedoIcon from "@mui/icons-material/CloseFullscreen"
 import PlayIcon from "@mui/icons-material/PlayArrow"
 import FFIcon from "@mui/icons-material/SkipNext"
 import FRIcon from "@mui/icons-material/SkipPrevious"
-import StopIcon from "@mui/icons-material/Stop"
+import StopIcon from "@mui/icons-material/RestartAlt"
 import PauseIcon from "@mui/icons-material/Pause"
 
 export default function ArmPage() {
@@ -47,6 +47,21 @@ export default function ArmPage() {
   const [log_text, setState] = useState("[INFO] Waiting for instructions...");
   const [selectedRowId, setSelectedRowId] = useState(null);
   const [selectionModel, setSelectionModel] = useState([]);
+  const [isPlaying, setIsPlaying] = useState(false); 
+  const [playInterval, setPlayInterval] = useState(null); 
+  const [playSpeed, setPlaySpeed] = useState(1000); 
+
+  
+  // Keep selectionModel always in sync with selectedRowId
+
+  useEffect(() => {
+  if (selectedRowId !== null) {
+    setSelectionModel([selectedRowId]);
+  } else {
+    setSelectionModel([]);
+  }
+}, [selectedRowId]);
+
 
 const jog = useCallback(async (axis, direction) => {
   const signedStep = direction === "+" ? step : -step;
@@ -221,6 +236,16 @@ const saveRoutine = (name, rows) => {
 };
 
 const columns = [
+  {
+    field: "current",
+    headerName: "",      // empty header
+    width: 30,           // small column for the arrow
+    sortable: false,
+    filterable: false,
+    disableColumnMenu: true,
+    renderCell: (params) =>
+      params.id === selectedRowId ? "➡️" : "" // show arrow only on selected row
+  },
   { field: "id", headerName: "#", width: 60 },
   { field: "instruction", headerName: "G-code", editable: true, width: 120 },
   { field: "x", headerName: "X (mm)", editable: true, width: 100 },
@@ -272,6 +297,103 @@ const addGripperCode = (code) => {
 const removeSelectedRow = () => {
   setRows(prevRows => prevRows.length ? prevRows.slice(0, -1) : prevRows);
 };
+
+
+const rowToGcode = (row) => {
+  if (!row) return null;
+
+  let gcode = row.instruction;
+
+  if (row.x !== null && row.x !== "") gcode += ` X${row.x}`;
+  if (row.y !== null && row.y !== "") gcode += ` Y${row.y}`;
+  if (row.z !== null && row.z !== "") gcode += ` Z${row.z}`;
+
+  return gcode;
+};
+
+
+const stepForward = async () => {
+  if (selectedRowId === null) {
+    setState("[WARN] No row selected");
+    return;
+  }
+
+  const currentIndex = rows.findIndex(r => r.id === selectedRowId);
+  if (currentIndex === -1) return;
+
+  const currentRow = rows[currentIndex];
+  const gcode = rowToGcode(currentRow);
+  if (!gcode) return;
+
+  const oldId = selectedRowId;
+  const nextIndex = Math.min(currentIndex + 1, rows.length - 1);
+  const nextId = rows[nextIndex].id;
+
+
+  setSelectedRowId(nextId);
+  await call("/gcode", { gcode });
+  await call("/status");
+
+  setState(`[INFO] Executed [${oldId} => ${nextId}]: ${gcode}`);
+};
+
+const stepBackward = async () => {
+  if (selectedRowId === null) {
+    setState("[WARN] No row selected");
+    return;
+  }
+
+  const currentIndex = rows.findIndex(r => r.id === selectedRowId);
+  if (currentIndex === -1) return;
+
+  const currentRow = rows[currentIndex];
+  const gcode = rowToGcode(currentRow);
+  if (!gcode) return;
+
+  const oldId = selectedRowId;
+  const prevIndex = Math.max(currentIndex - 1, 0); // move backward, not before first row
+  const prevId = rows[prevIndex].id;
+
+  // Update selected row first
+  setSelectedRowId(prevId);
+
+  // Send G-code
+  await call("/gcode", { gcode });
+  await call("/status");
+
+  setState(`[INFO] Executed [${oldId} => ${prevId}]: ${gcode}`);
+};
+
+const play = async () => {
+  if (selectedRowId === null || rows.length === 0) return;
+
+  setIsPlaying(true);
+
+  let currentIndex = rows.findIndex(r => r.id === selectedRowId);
+
+  while (currentIndex < rows.length - 1 && isPlaying) {
+    await stepForward(); // updates selectedRowId and setState
+    currentIndex = rows.findIndex(r => r.id === selectedRowId);
+  }
+
+  setIsPlaying(false);
+};
+
+const pause = () => {
+  setIsPlaying(false);
+  if (playInterval) clearInterval(playInterval);
+  setState("[INFO] Playback paused");
+};
+
+const stop = () => {
+  pause();
+  if (rows.length > 0) setSelectedRowId(rows[0].id);
+  setState("[INFO] Playback stopped");
+};
+
+
+
+
 
 
 
@@ -416,17 +538,19 @@ const removeSelectedRow = () => {
 
           {/* Excel-like grid */}
           <div style={{ height: 300, width: "100%" }}>
-            <DataGrid
-              rows={rows}
-              columns={columns}
-              disableSelectionOnClick 
-              processRowUpdate={(newRow) => {
-                setRows(prev =>
-                  prev.map(r => (r.id === newRow.id ? newRow : r))
-                );
-                return newRow;
-              }}
-            />
+          <DataGrid
+            rows={rows}
+            columns={columns}
+            selectionModel={[]} 
+            onRowClick={(params) => setSelectedRowId(params.id)}
+            processRowUpdate={(newRow) => {
+              setRows(prev => prev.map(r => (r.id === newRow.id ? newRow : r)));
+              return newRow;
+            }}
+            rowClassName={(params) =>
+              params.id === selectedRowId ? "highlighted-row" : ""
+            }
+          />
           </div>
         <Stack direction="row" spacing={1} marginBottom={2}>
           <Button variant="contained"  sx={{ width: 50, height: 70 }} onClick={addRow}> <PlusIcon/> </Button>
@@ -436,11 +560,9 @@ const removeSelectedRow = () => {
           <Button variant="contained"  sx={{ width: 50, height: 70 }} onClick={() => saveRoutine(selectedRoutine, rows)} color="error"> <SaveIcon/> </Button>
        </Stack>
        <Stack direction="row" spacing={1} marginBottom={2}>
-          <Button variant="contained"  sx={{ width: 50, height: 50 }} color="secondary"> <FRIcon/> </Button>
-          <Button variant="contained"  sx={{ width: 50, height: 50 }} color="secondary"> <FFIcon/> </Button>
-          <Button variant="contained"  sx={{ width: 50, height: 50 }} color="secondary"> <PlayIcon/> </Button>
-          <Button variant="contained"  sx={{ width: 50, height: 50 }} color="secondary"> <PauseIcon/> </Button>
-          <Button variant="contained"  sx={{ width: 50, height: 50 }} color="secondary"> <StopIcon/> </Button>
+          <Button variant="contained"  sx={{ width: 112, height: 50 }} onClick={stepBackward} color="secondary"> <FRIcon/> </Button>
+          <Button variant="contained"  sx={{ width: 112, height: 50 }} onClick={stepForward} color="secondary"> <FFIcon/> </Button>
+          <Button variant="contained"  sx={{ width: 112, height: 50 }} onClick={stop} color="secondary"> <StopIcon/> </Button>
        </Stack>
           </Paper>
         )}
