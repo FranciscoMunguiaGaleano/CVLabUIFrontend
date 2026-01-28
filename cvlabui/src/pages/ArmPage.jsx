@@ -21,8 +21,8 @@ import MinusIcon from "@mui/icons-material/RemoveCircleOutline"
 import StateIcon from "@mui/icons-material/MonitorHeart"
 import Icon from "@mui/icons-material/Home"
 import SaveIcon from "@mui/icons-material/Save"
-import UndoIcon from "@mui/icons-material/Undo"
-import RedoIcon from "@mui/icons-material/Redo"
+import UndoIcon from "@mui/icons-material/OpenInFull"
+import RedoIcon from "@mui/icons-material/CloseFullscreen"
 import PlayIcon from "@mui/icons-material/PlayArrow"
 import FFIcon from "@mui/icons-material/SkipNext"
 import FRIcon from "@mui/icons-material/SkipPrevious"
@@ -47,9 +47,6 @@ export default function ArmPage() {
   const [log_text, setState] = useState("[INFO] Waiting for instructions...");
   const [selectedRowId, setSelectedRowId] = useState(null);
   const [selectionModel, setSelectionModel] = useState([]);
-
-
-
 
 const jog = useCallback(async (axis, direction) => {
   const signedStep = direction === "+" ? step : -step;
@@ -176,20 +173,23 @@ useEffect(() => {
 
 const loadRoutine = (name) => {
   setSelectedRoutine(name);
-
-  fetch(`http://localhost:8080/api/v1/robot/arm/routines/${name}`)
+  fetch(`http://localhost:8080/api/v1/robot/arm/routines/load/${name}`)
     .then((res) => res.json())
     .then((data) => {
-      const parsedRows = data.gcodes.map((g, idx) => {
+        setState(JSON.stringify(data["message"]));
+        const parsedRows = data.gcodes.map((g, idx) => {
         const x = /X(-?\d+\.?\d*)/.exec(g);
         const y = /Y(-?\d+\.?\d*)/.exec(g);
         const z = /Z(-?\d+\.?\d*)/.exec(g);
-
+        const inst = /([GM])(\d+)/i.exec(g);
         return {
           id: idx,
-          x: x ? parseFloat(x[1]) : "",
-          y: y ? parseFloat(y[1]) : "",
-          z: z ? parseFloat(z[1]) : ""
+          instruction: inst ? `${inst[1]}${inst[2]}` : g,
+          type: inst ? inst[1] : "",
+          code: inst ? parseInt(inst[2], 10) : null,
+          x: x ? parseFloat(x[1]) : null,
+          y: y ? parseFloat(y[1]) : null,
+          z: z ? parseFloat(z[1]) : null
         };
       });
 
@@ -198,8 +198,31 @@ const loadRoutine = (name) => {
     .catch(console.error);
 };
 
+const saveRoutine = (name, rows) => {
+  // extract the instruction + coordinates as G-code lines
+  const gcodes = rows.map(row => {
+    let line = row.instruction;
+    if (row.x !== null && row.x !== "") line += ` X${row.x}`;
+    if (row.y !== null && row.y !== "") line += ` Y${row.y}`;
+    if (row.z !== null && row.z !== "") line += ` Z${row.z}`;
+    return line;
+  });
+
+  fetch(`http://localhost:8080/api/v1/robot/arm/routines/save/${name}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ gcodes })
+  })
+    .then(res => res.json())
+    .then(data => {console.log(data);
+      setState(JSON.stringify(data["message"]));
+    })
+    .catch(console.error);
+};
+
 const columns = [
   { field: "id", headerName: "#", width: 60 },
+  { field: "instruction", headerName: "G-code", editable: true, width: 120 },
   { field: "x", headerName: "X (mm)", editable: true, width: 100 },
   { field: "y", headerName: "Y (mm)", editable: true, width: 100 },
   { field: "z", headerName: "Z (mm)", editable: true, width: 100 }
@@ -216,6 +239,7 @@ const addRow = () => {
       ...prevRows,
       {
         id: nextId,
+        instruction: "G1",
         x: X_axis,
         y: Y_axis,
         z: Z_axis
@@ -224,10 +248,30 @@ const addRow = () => {
   });
 };
 
+const addGripperCode = (code) => {
+  setRows(prevRows => {
+    setState(`[INFO] Added ${code} gripper instruction to ${selectedRoutine}`);
+    const nextId =
+      prevRows.length === 0
+        ? 0
+        : Math.max(...prevRows.map(r => r.id)) + 1;
+
+    return [
+      ...prevRows,
+      {
+        id: nextId,
+        instruction: code,
+        x: null,
+        y: null,
+        z: null
+      }
+    ];
+  });
+};
+
 const removeSelectedRow = () => {
   setRows(prevRows => prevRows.length ? prevRows.slice(0, -1) : prevRows);
 };
-
 
 
 
@@ -375,7 +419,7 @@ const removeSelectedRow = () => {
             <DataGrid
               rows={rows}
               columns={columns}
-              disableSelectionOnClick // prevents cell click from trying to select
+              disableSelectionOnClick 
               processRowUpdate={(newRow) => {
                 setRows(prev =>
                   prev.map(r => (r.id === newRow.id ? newRow : r))
@@ -387,9 +431,9 @@ const removeSelectedRow = () => {
         <Stack direction="row" spacing={1} marginBottom={2}>
           <Button variant="contained"  sx={{ width: 50, height: 70 }} onClick={addRow}> <PlusIcon/> </Button>
           <Button variant="contained"  sx={{ width: 50, height: 70 }} onClick={removeSelectedRow}> <MinusIcon/></Button>
-          <Button variant="contained"  sx={{ width: 50, height: 70 }}> <UndoIcon/> </Button>
-          <Button variant="contained"  sx={{ width: 50, height: 70 }}> <RedoIcon/> </Button>
-          <Button variant="contained"  sx={{ width: 50, height: 70 }} color="error"> <SaveIcon/> </Button>
+          <Button variant="contained"  sx={{ width: 50, height: 70 }} onClick={() => addGripperCode("M100")}> <UndoIcon/> </Button>
+          <Button variant="contained"  sx={{ width: 50, height: 70 }} onClick={() => addGripperCode("M200")}> <RedoIcon/> </Button>
+          <Button variant="contained"  sx={{ width: 50, height: 70 }} onClick={() => saveRoutine(selectedRoutine, rows)} color="error"> <SaveIcon/> </Button>
        </Stack>
        <Stack direction="row" spacing={1} marginBottom={2}>
           <Button variant="contained"  sx={{ width: 50, height: 50 }} color="secondary"> <FRIcon/> </Button>
