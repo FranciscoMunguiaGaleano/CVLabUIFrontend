@@ -29,8 +29,9 @@ import FRIcon from "@mui/icons-material/SkipPrevious"
 import StopIcon from "@mui/icons-material/RestartAlt"
 import PauseIcon from "@mui/icons-material/Pause"
 
-export default function ArmPage() {
-  const [thinking, setThinking] = useState(false);
+
+export default function PipettePage() {
+    const [thinking, setThinking] = useState(false);
   const [X_axis, setXaxis] =useState(0.0);
   const [Y_axis, setYaxis] =useState(0.0);
   const [Z_axis, setZaxis] =useState(0.0);

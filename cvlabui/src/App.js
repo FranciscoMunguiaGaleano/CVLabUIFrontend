@@ -19,6 +19,7 @@ import PHMeterPage from "./pages/PHMeterPage";
 import WorkflowsPage from "./pages/WorkflowsPage";
 import ArmPage from "./pages/ArmPage";
 import EchemPage from "./pages/EchemPage";
+import PipettePage from "./pages/PipetteBot";
 import CapperPage from "./pages/CapperPage";
 import PotenciostatsPage from "./pages/PotenciostatsPage";
 import CoreDocsPage from "./pages/CoreDocsPage";
@@ -39,7 +40,7 @@ import MixerIcon from "@mui/icons-material/Blender"; // Capper / Mixer
 import WaterIcon from "@mui/icons-material/Water"; // pH Meter
 import PlaylistAddCheckIcon from "@mui/icons-material/Description"; // Workflows
 import PotenciostatIcon from "@mui/icons-material/Troubleshoot"; // Potentiostats
-
+import PipetteIcon from "@mui/icons-material/Colorize"; // PipetteIcon
 
 
 const drawerWidth = 240;
@@ -49,6 +50,7 @@ const navItems = [
   { label: "rEasype", path: "/reasype", icon: <ScienceIcon /> },
   { label: "Arm", path: "/arm", icon: <PrecisionManufacturingIcon /> },
   { label: "Echem", path: "/echem", icon: <EchemIcon /> },
+  { label: "PipetteBot", path: "/pipette", icon: <PipetteIcon /> },
   { label: "Carousels", path: "/carousels", icon: <ViewCarouselIcon /> },
   { label: "Solids Dispenser", path: "/solids_dispenser", icon: <StorageIcon /> },
   { label: "Liquids Dispenser", path: "/liquids_dispenser", icon: <OpacityIcon /> },
@@ -157,6 +159,7 @@ function Layout() {
           <Route path="/reasype" element={<ReasypePage />} />
           <Route path="/arm" element={<ArmPage />} />
           <Route path="/echem" element={<EchemPage />} />
+          <Route path="/pipette" element={<PipettePage />} />
           <Route path="/carousels" element={<CarouselsPage />} />
           <Route path="/solids_dispenser" element={<SolidsDispenserPage />} />
           <Route path="/liquids_dispenser" element={<LiquidsDispenserPage />} />
