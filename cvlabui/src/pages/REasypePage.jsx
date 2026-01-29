@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Typography, Paper, Stack } from "@mui/material";
 import Editor from "@monaco-editor/react";
 
 export default function ReasypePage() {
@@ -23,44 +23,47 @@ export default function ReasypePage() {
   })();
 
   return (
-    <Box sx={{ height: "80vh", p: 2 }}>
-      <Typography variant="h5" gutterBottom>
-        rEasype – JSON Editor
-      </Typography>
-
-      <Box sx={{ height: "100%", border: "1px solid #333" }}>
-        <Editor
-          height="100%"
-          language="json"
-          theme="vs-dark"
-          value={jsonText}
-          onChange={(value) => setJsonText(value ?? "")}
-          options={{
-            fontSize: 14,
-            minimap: { enabled: false },
-            formatOnPaste: true,
-            formatOnType: true,
-            automaticLayout: true,
-          }}
-        />
-      </Box>
-
-      <Box sx={{ mt: 2, display: "flex", gap: 2, alignItems: "center" }}>
-        <Button
-          variant="contained"
-          disabled={!isValidJson}
-          onClick={() => console.log(JSON.parse(jsonText))}
-        >
-          Save
-        </Button>
-
-        <Typography
-          variant="body2"
-          color={isValidJson ? "success.main" : "error.main"}
-        >
-          {isValidJson ? "Valid JSON" : "Invalid JSON"}
+    <Paper sx={{ p: 4, maxWidth: 1000, mx: "auto" }} elevation={3}>
+      <Stack spacing={2}>
+        <Typography variant="h5">
+          rEasype – JSON Editor
         </Typography>
-      </Box>
-    </Box>
+
+        {/* ✅ Give Monaco a fixed height */}
+        <Box sx={{ height: "60vh", border: "1px solid #333" }}>
+          <Editor
+            height="100%"
+            language="json"
+            theme="vs-dark"
+            value={jsonText}
+            onChange={(value) => setJsonText(value ?? "")}
+            options={{
+              fontSize: 14,
+              minimap: { enabled: false },
+              formatOnPaste: true,
+              formatOnType: true,
+              automaticLayout: true,
+            }}
+          />
+        </Box>
+
+        <Stack direction="row" spacing={2} alignItems="center">
+          <Button
+            variant="contained"
+            disabled={!isValidJson}
+            onClick={() => console.log(JSON.parse(jsonText))}
+          >
+            Save
+          </Button>
+
+          <Typography
+            variant="body2"
+            color={isValidJson ? "success.main" : "error.main"}
+          >
+            {isValidJson ? "Valid JSON" : "Invalid JSON"}
+          </Typography>
+        </Stack>
+      </Stack>
+    </Paper>
   );
 }
