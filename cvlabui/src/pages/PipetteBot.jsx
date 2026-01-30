@@ -67,7 +67,7 @@ useEffect(() => {
 const jog = useCallback(async (axis, direction) => {
   const signedStep = direction === "+" ? step : -step;
   setThinking(true);
-  return fetch(`http://localhost:8080/api/v1/robot/arm/jog_${axis}`, {
+  return fetch(`http://localhost:8080/api/v1/pipettebot/jog_${axis}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ step: signedStep }),
@@ -87,32 +87,32 @@ const jog = useCallback(async (axis, direction) => {
   
 }, [step]);
 
-  const call = async (endpoint, payload = null) => {
-    setThinking(true);
-    return fetch(`http://localhost:8080/api/v1/robot/arm${endpoint}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: payload ? JSON.stringify(payload) : null,
-    }).then((response) => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return response.json();
-    })
-    .then((result) => {
-      setState(JSON.stringify(result["message"]));
-    })
-    .catch((error) => {
-      console.error(error);
-      setState({ error: error.message });
-    }).finally(() => {
-    setThinking(false);
-    })
-  };
+const call = async (endpoint, payload = null) => {
+  setThinking(true);
+  return fetch(`http://localhost:8080/api/v1/pipettebot${endpoint}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: payload ? JSON.stringify(payload) : null,
+  }).then((response) => {
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.json();
+  })
+  .then((result) => {
+    setState(JSON.stringify(result["message"]));
+  })
+  .catch((error) => {
+    console.error(error);
+    setState({ error: error.message });
+  }).finally(() => {
+  setThinking(false);
+  })
+};
 
 const state = async (endpoint, payload = null) => {
   setThinking(true);
-  return fetch(`http://localhost:8080/api/v1/robot/arm${endpoint}`, {
+  return fetch(`http://localhost:8080/api/v1/pipettebot${endpoint}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: payload ? JSON.stringify(payload) : null,
@@ -141,7 +141,7 @@ const jogAndUpdate = async (axis, dir) => {
 useEffect(() => {
   if (!teachMode) return;
 
-  fetch("http://localhost:8080/api/v1/robot/arm/routines")
+  fetch("http://localhost:8080/api/v1/pipettebot/routines")
     .then((res) => res.json())
     .then((data) => setRoutines(data.routines || []))
     .catch(console.error);
@@ -149,7 +149,7 @@ useEffect(() => {
 
 const loadRoutine = (name) => {
   setSelectedRoutine(name);
-  fetch(`http://localhost:8080/api/v1/robot/arm/routines/load/${name}`)
+  fetch(`http://localhost:8080/api/v1/pipettebot/routines/load/${name}`)
     .then((res) => res.json())
     .then((data) => {
         setState(JSON.stringify(data["message"]));
@@ -184,7 +184,7 @@ const saveRoutine = (name, rows) => {
     return line;
   });
 
-  fetch(`http://localhost:8080/api/v1/robot/arm/routines/save/${name}`, {
+  fetch(`http://localhost:8080/api/v1/pipettebot/routines/save/${name}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ gcodes })
@@ -373,14 +373,6 @@ useEffect(() => {
         jogAndUpdate("x", "-");
         break;
 
-      // Z jog
-      case "p":
-        jogAndUpdate("z", "+");
-        break;
-      case "k":
-        jogAndUpdate("z", "-");
-        break;
-
       // Step size
       case "=":
         setStep((s) => s + stepIncrease);
@@ -398,11 +390,11 @@ useEffect(() => {
         state("/status");
         break;
 
-      // Gripper
+      // Sample
       case "o":
         call("/open_gripper");
         break;
-      case "c": // moved from "k" to avoid conflict
+      case "c": // Dispense
         call("/close_gripper");
         break;
 
@@ -475,9 +467,8 @@ useEffect(() => {
         Jog Controls Arm
       </Typography>
       <Stack direction="row" spacing={2} marginBottom={2}>
-        <Button variant="contained" onClick={async () => {await jog("y", "-"); await state("/status")}} sx={{ width: 80, height: 80 }}>Y<NorthIcon style={{ marginLeft: 11 }}/></Button>
-        <Button variant="contained" onClick={async () => {await jog("z", "+"); await state("/status")}} sx={{ width: 80, height: 80 }}>Z<NortheastIcon style={{ marginLeft: 11 }}/></Button>
-        <Button variant="contained" onClick={() => setStep((prev) => prev + stepIncrease)} sx={{ width: 80, height: 80, fontSize: 22 }} color= "inherit"><PlusIcon/></Button>
+        <Button variant="contained" onClick={async () => {await jog("y", "-"); await state("/status")}} sx={{ width: 130, height: 80 }}>Y<NorthIcon style={{ marginLeft: 11 }}/></Button>
+        <Button variant="contained" onClick={() => setStep((prev) => prev + stepIncrease)} sx={{ width: 126, height: 80, fontSize: 22 }} color= "inherit"><PlusIcon/></Button>
         <TextField
           select
           label="Step Increment"
@@ -506,17 +497,16 @@ useEffect(() => {
       </Stack>
 
       <Stack direction="row" spacing={2} marginBottom={2}>
-        <Button variant="contained" onClick={async () => {await jog("y", "+"); await state("/status")}} sx={{ width: 80, height: 80 }}>Y<SouthIcon style={{ marginLeft: 11 }}/></Button>
-        <Button variant="contained" onClick={async () => {await jog("z", "-"); await state("/status")}}>Z<SouthwestIcon style={{ marginLeft: 11 }}/></Button>
-        <Button variant="contained" onClick={() => setStep = ((prev) => Math.max(0, prev - stepIncrease))} sx={{ width: 80, height: 80, fontSize: 22 }} color="inherit"><MinusIcon/></Button>
+        <Button variant="contained" onClick={async () => {await jog("y", "+"); await state("/status")}} sx={{ width: 130, height: 80 }}>Y<SouthIcon style={{ marginLeft: 11 }}/></Button>
+        <Button variant="contained" onClick={() => setStep = ((prev) => Math.max(0, prev - stepIncrease))} sx={{ width: 126, height: 80, fontSize: 22 }} color="inherit"><MinusIcon/></Button>
         
       </Stack>
       
       
       <Stack direction="row" spacing={1} marginBottom={2}>
-        <Button variant="contained" onClick={() => {call("/open_gripper"); setGripper(1)}} sx={{ width: 160, height: 50 }}>Open Gripper</Button>
+        <Button variant="contained" onClick={() => {call("/open_gripper"); setGripper(1)}} sx={{ width: 160, height: 50 }}>Sample</Button>
         <Button variant="contained" onClick={() => {state("/status")}}sx={{ width: 100, height: 50 }}><StateIcon/></Button>
-        <Button variant="contained" onClick={() => {call("/close_gripper"); setGripper(0)}} sx={{ width: 160, height: 50 }}>Close Gripper</Button>
+        <Button variant="contained" onClick={() => {call("/close_gripper"); setGripper(0)}} sx={{ width: 160, height: 50 }}>Dispense</Button>
       </Stack>
 
       <Stack direction="row" spacing={2}>
