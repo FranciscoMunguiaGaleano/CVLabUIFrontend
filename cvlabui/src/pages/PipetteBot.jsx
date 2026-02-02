@@ -464,7 +464,7 @@ useEffect(() => {
     {/* LEFT: Jog Control Panel */}
     <Grid item xs={12} md={8}>
       <Typography variant="h4" gutterBottom>
-        Jog Controls Arm
+        Pipette Arm Jog Controls 
       </Typography>
       <Stack direction="row" spacing={2} marginBottom={2}>
         <Button variant="contained" onClick={async () => {await jog("y", "-"); await state("/status")}} sx={{ width: 130, height: 80 }}>Y<NorthIcon style={{ marginLeft: 11 }}/></Button>
