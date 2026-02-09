@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Button, Stack, Typography, TextField, Paper, Grid, Box , MenuItem , FormControlLabel, Switch} from "@mui/material";
-import instruction from "../imgs/instructions/gantry.png";
+import instruction from "../imgs/instructions/gantrypipette.png";
 import { DataGrid } from "@mui/x-data-grid";
 import {
   Select,
@@ -467,7 +467,7 @@ useEffect(() => {
         Pipette Arm Jog Controls 
       </Typography>
       <Stack direction="row" spacing={2} marginBottom={2}>
-        <Button variant="contained" onClick={async () => {await jog("y", "-"); await state("/status")}} sx={{ width: 130, height: 80 }}>Y<NorthIcon style={{ marginLeft: 11 }}/></Button>
+        <Button variant="contained" onClick={async () => {await jog("z", "-"); await state("/status")}} sx={{ width: 130, height: 80 }}>Z<NorthIcon style={{ marginLeft: 11 }}/></Button>
         <Button variant="contained" onClick={() => setStep((prev) => prev + stepIncrease)} sx={{ width: 126, height: 80, fontSize: 22 }} color= "inherit"><PlusIcon/></Button>
         <TextField
           select
@@ -497,7 +497,7 @@ useEffect(() => {
       </Stack>
 
       <Stack direction="row" spacing={2} marginBottom={2}>
-        <Button variant="contained" onClick={async () => {await jog("y", "+"); await state("/status")}} sx={{ width: 130, height: 80 }}>Y<SouthIcon style={{ marginLeft: 11 }}/></Button>
+        <Button variant="contained" onClick={async () => {await jog("z", "+"); await state("/status")}} sx={{ width: 130, height: 80 }}>Z<SouthIcon style={{ marginLeft: 11 }}/></Button>
         <Button variant="contained" onClick={() => setStep = ((prev) => Math.max(0, prev - stepIncrease))} sx={{ width: 126, height: 80, fontSize: 22 }} color="inherit"><MinusIcon/></Button>
         
       </Stack>
@@ -550,7 +550,7 @@ useEffect(() => {
         src={instruction}
         alt="Jog Control Instructions"
         sx={{
-          width: "170%",
+          width: "120%",
           maxHeight: 500,
           objectFit: "contain",
           borderRadius: 10,
