@@ -485,7 +485,7 @@ useEffect(() => {
 
       <Stack direction="row" spacing={2} marginBottom={2}>
         <Button variant="contained" onClick={async () => {await jog("x", "-"); await state("/status")}} sx={{ width: 80, height: 80 }}>X<WestIcon style={{ marginLeft: 11 }}/></Button>
-        <Button variant="contained" onClick={async () => {await call("/home"); await state("/status")}}sx={{ width: 80, height: 80 }}><HomeIcon/></Button>
+        <Button variant="contained" onClick={async () => {await call("/pipette_arm_home"); await state("/status")}}sx={{ width: 80, height: 80 }}><HomeIcon/></Button>
         <Button variant="contained" onClick={async () => {await jog("x", "+"); await state("/status")}} sx={{ width: 80, height: 80 }}>X<EastIcon style={{ marginLeft: 11 }}/></Button>
         <TextField
           label="Current Step (mm)"
@@ -498,7 +498,7 @@ useEffect(() => {
 
       <Stack direction="row" spacing={2} marginBottom={2}>
         <Button variant="contained" onClick={async () => {await jog("z", "+"); await state("/status")}} sx={{ width: 130, height: 80 }}>Z<SouthIcon style={{ marginLeft: 11 }}/></Button>
-        <Button variant="contained" onClick={() => setStep = ((prev) => Math.max(0, prev - stepIncrease))} sx={{ width: 126, height: 80, fontSize: 22 }} color="inherit"><MinusIcon/></Button>
+        <Button variant="contained" onClick={() => setStep((prev) => Math.max(0, prev - stepIncrease))} sx={{ width: 126, height: 80, fontSize: 22 }} color="inherit"><MinusIcon/></Button>
         
       </Stack>
       
