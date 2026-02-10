@@ -124,7 +124,6 @@ const state = async (endpoint, payload = null) => {
       return response.json();
     })
     .then((result) => {
-      setState(JSON.stringify(result["message"]));
       setXaxis(result["X"]);
       setYaxis(result["Y"]);
       setZaxis(result["Z"]);
@@ -516,7 +515,7 @@ useEffect(() => {
           onChange={(e) => setGcode(e.target.value)}
           fullWidth
         />
-        <Button variant="contained" onClick={async () => {await call("/gcode",{"gcode": gcode}); await state("/status")}} color="success">Send</Button>
+        <Button variant="contained" onClick={async () => {await call("/pipette_arm_send_gcode",{"gcode": gcode}); await state("/status")}} color="success">Send</Button>
       </Stack>
       <Stack direction="row" spacing={4} alignItems="center">
         <FormControlLabel
@@ -626,7 +625,7 @@ useEffect(() => {
           <Stack direction="column" spacing={2} marginBottom={2}>
             
             <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-            <Typography variant="body3">X: {X_axis} Y: {Y_axis} Z: {Z_axis} Gripper: {GRIPPER}</Typography>
+            <Typography variant="body3">X: {X_axis} Y: {Y_axis} Z: {Z_axis} </Typography>
             </Box>
             {thinking && (
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
