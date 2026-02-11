@@ -503,14 +503,14 @@ useEffect(() => {
       
       
       <Stack direction="row" spacing={1} marginBottom={2}>
-        <Button variant="contained" onClick={() => {call("/pipette_preload"); setGripper(1)}} sx={{ width: 160, height: 50 }}>Pre-load</Button>
+        <Button variant="contained" color="secondary" onClick={() => {call("/pipette_preload"); setGripper(1)}} sx={{ width: 160, height: 50 }}>Pre-load</Button>
         <Button variant="contained" onClick={() => {state("/status")}}sx={{ width: 100, height: 50 }}><StateIcon/></Button>
-        <Button variant="contained" onClick={() => {call("/pipette_load"); setGripper(0)}} sx={{ width: 160, height: 50 }}>Load</Button>
+        <Button variant="contained" color="secondary"  onClick={() => {call("/pipette_load"); setGripper(0)}} sx={{ width: 160, height: 50 }}>Load</Button>
       </Stack>
       <Stack direction="row" spacing={1} marginBottom={2}>
-        <Button variant="contained" onClick={() => {call("/pipette_unload"); setGripper(1)}} sx={{ width: 160, height: 50 }}>Dispense</Button>
-        <Button variant="contained" onClick={async () => {await call("/pipette_home"); await state("/status")}}sx={{ width: 100, height: 50 }}><HomeIcon/></Button>
-        <Button variant="contained" onClick={() => {call("/pipette_eject_tip"); setGripper(0)}} sx={{ width: 160, height: 50 }}>Eject</Button>
+        <Button variant="contained" color="secondary"  onClick={() => {call("/pipette_unload"); setGripper(1)}} sx={{ width: 160, height: 50 }}>Dispense</Button>
+        <Button variant="contained" color="secondary"  onClick={async () => {await call("/pipette_home"); await state("/status")}}sx={{ width: 100, height: 50 }}><HomeIcon/></Button>
+        <Button variant="contained" color="error" onClick={() => {call("/pipette_eject_tip"); setGripper(0)}} sx={{ width: 160, height: 50 }}>Eject</Button>
       </Stack>
 
       <Stack direction="row" spacing={2}>
