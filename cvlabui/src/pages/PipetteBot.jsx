@@ -360,10 +360,10 @@ useEffect(() => {
     switch (e.key) {
       // XY jog
       case "ArrowUp":
-        jogAndUpdate("y", "-");
+        jogAndUpdate("z", "-");
         break;
       case "ArrowDown":
-        jogAndUpdate("y", "+");
+        jogAndUpdate("z", "+");
         break;
       case "ArrowRight":
         jogAndUpdate("x", "+");
@@ -389,12 +389,12 @@ useEffect(() => {
         state("/status");
         break;
 
-      // Sample
+      // Dispense
       case "o":
-        call("/open_gripper");
-        break;
-      case "c": // Dispense
-        call("/close_gripper");
+        addGripperCode("M103"); //Load
+        break; 
+      case "k": // Eject
+        addGripperCode("M104");
         break;
 
       // Routine table
@@ -405,12 +405,12 @@ useEffect(() => {
         removeSelectedRow();
         break;
 
-      // Gripper code
+      // Pipette code
       case "e":
-        addGripperCode("M100");
+        addGripperCode("M101"); //Pre load
         break;
       case "r":
-        addGripperCode("M200");
+        addGripperCode("M102"); //Load
         break;
 
       // Save
@@ -426,7 +426,7 @@ useEffect(() => {
         stepForward();
         break;
 
-      // Stop
+      // Reset
       case "d":
         stop();
         break;
@@ -605,8 +605,10 @@ useEffect(() => {
         <Stack direction="row" spacing={1} marginBottom={2}>
           <Button variant="contained"  sx={{ width: 50, height: 70 }} onClick={addRow}> <PlusIcon/> </Button>
           <Button variant="contained"  sx={{ width: 50, height: 70 }} onClick={removeSelectedRow}> <MinusIcon/></Button>
-          <Button variant="contained"  sx={{ width: 50, height: 70 }} onClick={() => addGripperCode("M100")}> <UndoIcon/> </Button>
-          <Button variant="contained"  sx={{ width: 50, height: 70 }} onClick={() => addGripperCode("M200")}> <RedoIcon/> </Button>
+          <Button variant="contained"  sx={{ width: 80, height: 70 }} onClick={() => addGripperCode("M101")}> Pre-Load </Button>
+          <Button variant="contained"  sx={{ width: 80, height: 70 }} onClick={() => addGripperCode("M102")}> Load </Button>
+          <Button variant="contained"  sx={{ width: 80, height: 70 }} onClick={() => addGripperCode("M103")}> Dispense </Button>
+          <Button variant="contained"  sx={{ width: 80, height: 70 }} onClick={() => addGripperCode("M104")}> Eject </Button>
           <Button variant="contained"  sx={{ width: 50, height: 70 }} onClick={() => saveRoutine(selectedRoutine, rows)} color="error"> <SaveIcon/> </Button>
        </Stack>
        <Stack direction="row" spacing={1} marginBottom={2}>
