@@ -382,7 +382,7 @@ useEffect(() => {
 
       // Navigation / status
       case "h":
-        await call("/home");
+        await call("/pipette_arm_home");
         await state("/status");
         break;
       case "u":
