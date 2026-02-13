@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Button, Stack, Typography, TextField, Paper, Grid, Box , MenuItem , FormControlLabel, Switch} from "@mui/material";
 import instruction from "../imgs/instructions/gantry.png";
+import instructionImg from "../imgs/instructions/gantry.png";
 import { DataGrid } from "@mui/x-data-grid";
 import {
   Select,
@@ -50,6 +51,11 @@ export default function EchemPage() {
   const [isPlaying, setIsPlaying] = useState(false); 
   const [playInterval, setPlayInterval] = useState(null); 
   const [playSpeed, setPlaySpeed] = useState(1000); 
+  const [cameraEnabled, setCameraEnabled] = useState(false);
+  const [instruction, setInstruction] = useState(instructionImg);
+
+
+
 
   
   // Keep selectionModel always in sync with selectedRowId
@@ -66,7 +72,7 @@ useEffect(() => {
 const jog = useCallback(async (axis, direction) => {
   const signedStep = direction === "+" ? step : -step;
   setThinking(true);
-  return fetch(`http://localhost:8080/api/v1/robot/arm/jog_${axis}`, {
+  return fetch(`http://localhost:8080/api/v1/echem/jog_${axis}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ step: signedStep }),
@@ -88,7 +94,7 @@ const jog = useCallback(async (axis, direction) => {
 
   const call = async (endpoint, payload = null) => {
     setThinking(true);
-    return fetch(`http://localhost:8080/api/v1/robot/arm${endpoint}`, {
+    return fetch(`http://localhost:8080/api/v1/echem${endpoint}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: payload ? JSON.stringify(payload) : null,
@@ -111,7 +117,7 @@ const jog = useCallback(async (axis, direction) => {
 
 const state = async (endpoint, payload = null) => {
   setThinking(true);
-  return fetch(`http://localhost:8080/api/v1/robot/arm${endpoint}`, {
+  return fetch(`http://localhost:8080/api/v1/echem${endpoint}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: payload ? JSON.stringify(payload) : null,
@@ -140,7 +146,7 @@ const jogAndUpdate = async (axis, dir) => {
 useEffect(() => {
   if (!teachMode) return;
 
-  fetch("http://localhost:8080/api/v1/robot/arm/routines")
+  fetch("http://localhost:8080/api/v1/echem/routines")
     .then((res) => res.json())
     .then((data) => setRoutines(data.routines || []))
     .catch(console.error);
@@ -148,7 +154,7 @@ useEffect(() => {
 
 const loadRoutine = (name) => {
   setSelectedRoutine(name);
-  fetch(`http://localhost:8080/api/v1/robot/arm/routines/load/${name}`)
+  fetch(`http://localhost:8080/api/v1/echem/routines/load/${name}`)
     .then((res) => res.json())
     .then((data) => {
         setState(JSON.stringify(data["message"]));
@@ -183,7 +189,7 @@ const saveRoutine = (name, rows) => {
     return line;
   });
 
-  fetch(`http://localhost:8080/api/v1/robot/arm/routines/save/${name}`, {
+  fetch(`http://localhost:8080/api/v1/echem/routines/save/${name}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ gcodes })
@@ -464,6 +470,40 @@ useEffect(() => {
   setStep
 ]);
 
+const fetchCameraImage = async () => {
+  try {
+    setThinking(true);
+
+    const response = await fetch(
+      "http://localhost:8080/api/v1/echem/capture",
+      { method: "GET" }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const blob = await response.blob();
+    const imageUrl = URL.createObjectURL(blob);
+
+    setInstruction(imageUrl); // replaces the image
+  } catch (error) {
+    console.error(error);
+    setState({ error: error.message });
+  } finally {
+    setThinking(false);
+  }
+};
+const toggleCamera = () => {
+  if (!cameraEnabled) {
+    fetchCameraImage();
+  } else {
+    setInstruction(instructionImg);
+  }
+  setCameraEnabled(!cameraEnabled);
+};
+
+
   return (
   <Paper style={{ padding: 50, maxWidth: 1000, margin: "0px auto" }} elevation={3}>
   <Grid container spacing={4}>
@@ -491,9 +531,11 @@ useEffect(() => {
         </TextField>
       </Stack>
 
+      
+
       <Stack direction="row" spacing={2} marginBottom={2}>
         <Button variant="contained" onClick={async () => {await jog("x", "-"); await state("/status")}} sx={{ width: 80, height: 80 }}>X<WestIcon style={{ marginLeft: 11 }}/></Button>
-        <Button variant="contained" onClick={async () => {await call("/home"); await state("/status")}}sx={{ width: 80, height: 80 }}><HomeIcon/></Button>
+        <Button variant="contained" onClick={async () => {await call("/echem_arm_home"); await state("/status")}}sx={{ width: 80, height: 80 }}><HomeIcon/></Button>
         <Button variant="contained" onClick={async () => {await jog("x", "+"); await state("/status")}} sx={{ width: 80, height: 80 }}>X<EastIcon style={{ marginLeft: 11 }}/></Button>
         <TextField
           label="Current Step (mm)"
@@ -508,15 +550,24 @@ useEffect(() => {
         <Button variant="contained" onClick={async () => {await jog("y", "+"); await state("/status")}} sx={{ width: 80, height: 80 }}>Y<SouthIcon style={{ marginLeft: 11 }}/></Button>
         <Button variant="contained" onClick={async () => {await jog("z", "-"); await state("/status")}}>Z<SouthwestIcon style={{ marginLeft: 11 }}/></Button>
         <Button variant="contained" onClick={() => setStep = ((prev) => Math.max(0, prev - stepIncrease))} sx={{ width: 80, height: 80, fontSize: 22 }} color="inherit"><MinusIcon/></Button>
-        
       </Stack>
-      
+
+       <Stack direction="row" spacing={1} marginBottom={2}>
+        <Button variant="contained" onClick={() => {state("/status")}}sx={{ width: 100, height: 50 }}><StateIcon/></Button>
+        <Button variant="contained" color="warning" onClick={toggleCamera}>{cameraEnabled ? "Show Instructions" : "Show Camera"}</Button>
+       </Stack>
       
       <Stack direction="row" spacing={1} marginBottom={2}>
-        <Button variant="contained" onClick={() => {call("/open_gripper"); setGripper(1)}} sx={{ width: 160, height: 50 }}>Open Gripper</Button>
-        <Button variant="contained" onClick={() => {state("/status")}}sx={{ width: 100, height: 50 }}><StateIcon/></Button>
-        <Button variant="contained" onClick={() => {call("/close_gripper"); setGripper(0)}} sx={{ width: 160, height: 50 }}>Close Gripper</Button>
-      </Stack>
+        <Button variant="contained" color="seondary" onClick={() => {call("/echem_raise_electrodes"); setGripper(1)}} sx={{ width: 120, height: 70 }}>Lower Electrodes</Button>
+        <Button variant="contained" color="seondary" onClick={() => {state("/echem_polisher_on")}}sx={{ width: 120, height: 70 }}>Polisher ON</Button>
+        <Button variant="contained" color="seondary" onClick={() => {call("/echem_polisher_dropper_on"); setGripper(0)}} sx={{ width: 120, height: 70 }}>Dropper ON</Button>
+       </Stack>
+
+      <Stack direction="row" spacing={1} marginBottom={2}>
+        <Button variant="contained" color="secondary" onClick={() => {call("/echem_lower_electrodes"); setGripper(1)}} sx={{ width: 120, height: 70 }}>Raise Electrodes</Button>
+        <Button variant="contained" color="secondary" onClick={() => {state("/echem_polisher_off")}}sx={{ width: 120, height: 70 }}>Polisher OFF</Button>
+        <Button variant="contained" color="secondary" onClick={() => {call("/echem_polisher_dropper_off"); setGripper(0)}} sx={{ width: 120, height: 70 }}>Dropper OFF</Button>
+       </Stack>
 
       <Stack direction="row" spacing={2}>
         <TextField
@@ -525,7 +576,7 @@ useEffect(() => {
           onChange={(e) => setGcode(e.target.value)}
           fullWidth
         />
-        <Button variant="contained" onClick={async () => {await call("/gcode",{"gcode": gcode}); await state("/status")}} color="success">Send</Button>
+        <Button variant="contained" onClick={async () => {await call("/echem_arm_send_gcode",{"gcode": gcode}); await state("/status")}} color="success">Send</Button>
       </Stack>
       <Stack direction="row" spacing={4} alignItems="center">
         <FormControlLabel
@@ -553,19 +604,22 @@ useEffect(() => {
     </Grid>
 
     {/* RIGHT: Instruction Image */}
-    <Grid item xs={12} md={4}>
+    <Grid item xs={12} md={4} sx={{ alignSelf: "flex-start" }}>
+
       <Box
         component="img"
         src={instruction}
         alt="Jog Control Instructions"
         sx={{
-          width: "170%",
+          width: cameraEnabled ? "100%" : "170%",
           maxHeight: 500,
           objectFit: "contain",
           borderRadius: 10,
-          boxShadow: 0
+          boxShadow: 0,
+          transition: "width 0.3s ease" // optional, looks nice
         }}
       />
+
     </Grid>
     </Grid>
     {/* Routines visualiser */}
