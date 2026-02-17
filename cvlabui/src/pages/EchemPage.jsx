@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Button, Stack, Typography, TextField, Paper, Grid, Box , MenuItem , FormControlLabel, Switch} from "@mui/material";
 import instruction from "../imgs/instructions/gantry.png";
-import instructionImg from "../imgs/instructions/gantry.png";
+import instructionImg from "../imgs/instructions/echem.png";
 import { DataGrid } from "@mui/x-data-grid";
 import {
   Select,
@@ -514,8 +514,8 @@ const toggleCamera = () => {
         Echem Jog Controls 
       </Typography>
       <Stack direction="row" spacing={2} marginBottom={2}>
-        <Button variant="contained" onClick={async () => {await jog("y", "-"); await state("/status")}} sx={{ width: 80, height: 80 }}>Y<NorthIcon style={{ marginLeft: 11 }}/></Button>
-        <Button variant="contained" onClick={async () => {await jog("z", "+"); await state("/status")}} sx={{ width: 80, height: 80 }}>Z<NortheastIcon style={{ marginLeft: 11 }}/></Button>
+        <Button variant="contained" onClick={async () => {await jog("z", "+"); await state("/status")}} sx={{ width: 80, height: 80 }}>Z<NorthIcon style={{ marginLeft: 11 }}/></Button>
+        <Button variant="contained" onClick={async () => {await jog("y", "-"); await state("/status")}} sx={{ width: 80, height: 80 }}>Y<NortheastIcon style={{ marginLeft: 11 }}/></Button>
         <Button variant="contained" onClick={() => setStep((prev) => prev + stepIncrease)} sx={{ width: 80, height: 80, fontSize: 22 }} color= "inherit"><PlusIcon/></Button>
         <TextField
           select
@@ -547,8 +547,8 @@ const toggleCamera = () => {
       </Stack>
 
       <Stack direction="row" spacing={2} marginBottom={2}>
-        <Button variant="contained" onClick={async () => {await jog("y", "+"); await state("/status")}} sx={{ width: 80, height: 80 }}>Y<SouthIcon style={{ marginLeft: 11 }}/></Button>
-        <Button variant="contained" onClick={async () => {await jog("z", "-"); await state("/status")}}>Z<SouthwestIcon style={{ marginLeft: 11 }}/></Button>
+        <Button variant="contained" onClick={async () => {await jog("z", "-"); await state("/status")}} sx={{ width: 80, height: 80 }}>Z<SouthIcon style={{ marginLeft: 11 }}/></Button>
+        <Button variant="contained" onClick={async () => {await jog("y", "+"); await state("/status")}}>Y<SouthwestIcon style={{ marginLeft: 11 }}/></Button>
         <Button variant="contained" onClick={() => setStep = ((prev) => Math.max(0, prev - stepIncrease))} sx={{ width: 80, height: 80, fontSize: 22 }} color="inherit"><MinusIcon/></Button>
       </Stack>
 
@@ -611,7 +611,7 @@ const toggleCamera = () => {
         src={instruction}
         alt="Jog Control Instructions"
         sx={{
-          width: cameraEnabled ? "100%" : "170%",
+          width: cameraEnabled ? "90%" : "90%",
           maxHeight: 500,
           objectFit: "contain",
           borderRadius: 10,
