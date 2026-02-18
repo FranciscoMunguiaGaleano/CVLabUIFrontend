@@ -558,15 +558,17 @@ const toggleCamera = () => {
        </Stack>
       
       <Stack direction="row" spacing={1} marginBottom={2}>
-        <Button variant="contained" color="seondary" onClick={() => {call("/echem_raise_electrodes"); setGripper(1)}} sx={{ width: 120, height: 70 }}>Lower Electrodes</Button>
-        <Button variant="contained" color="seondary" onClick={() => {state("/echem_polisher_on")}}sx={{ width: 120, height: 70 }}>Polisher ON</Button>
-        <Button variant="contained" color="seondary" onClick={() => {call("/echem_polisher_dropper_on"); setGripper(0)}} sx={{ width: 120, height: 70 }}>Dropper ON</Button>
+        <Button variant="contained" color="seondary" onClick={() => {call("/echem_raise_electrodes"); setGripper(1)}} sx={{ width: 105, height: 70 }}>Lower Electrodes</Button>
+        <Button variant="contained" color="seondary" onClick={() => {state("/echem_polisher_on")}}sx={{ width: 100, height: 70 }}>Polisher ON</Button>
+        <Button variant="contained" color="seondary" onClick={() => {call("/echem_polisher_dropper_on"); setGripper(0)}} sx={{ width: 100, height: 70 }}>Dropper ON</Button>
+        <Button variant="contained" color="seondary" onClick={() => {call("/echem_polisher_dropper_on"); setGripper(0)}} sx={{ width: 100, height: 70 }}>Purger ON</Button>
        </Stack>
 
       <Stack direction="row" spacing={1} marginBottom={2}>
-        <Button variant="contained" color="secondary" onClick={() => {call("/echem_lower_electrodes"); setGripper(1)}} sx={{ width: 120, height: 70 }}>Raise Electrodes</Button>
-        <Button variant="contained" color="secondary" onClick={() => {state("/echem_polisher_off")}}sx={{ width: 120, height: 70 }}>Polisher OFF</Button>
-        <Button variant="contained" color="secondary" onClick={() => {call("/echem_polisher_dropper_off"); setGripper(0)}} sx={{ width: 120, height: 70 }}>Dropper OFF</Button>
+        <Button variant="contained" color="secondary" onClick={() => {call("/echem_lower_electrodes"); setGripper(1)}} sx={{ width: 105, height: 70 }}>Raise Electrodes</Button>
+        <Button variant="contained" color="secondary" onClick={() => {state("/echem_polisher_off")}}sx={{ width: 100, height: 70 }}>Polisher OFF</Button>
+        <Button variant="contained" color="secondary" onClick={() => {call("/echem_polisher_dropper_off"); setGripper(0)}} sx={{ width: 100, height: 70 }}>Dropper OFF</Button>
+        <Button variant="contained" color="secondary" onClick={() => {call("/echem_polisher_dropper_off"); setGripper(0)}} sx={{ width: 100, height: 70 }}>Purger OFF</Button>
        </Stack>
 
       <Stack direction="row" spacing={2}>
@@ -664,8 +666,6 @@ const toggleCamera = () => {
         <Stack direction="row" spacing={1} marginBottom={2}>
           <Button variant="contained"  sx={{ width: 50, height: 70 }} onClick={addRow}> <PlusIcon/> </Button>
           <Button variant="contained"  sx={{ width: 50, height: 70 }} onClick={removeSelectedRow}> <MinusIcon/></Button>
-          <Button variant="contained"  sx={{ width: 50, height: 70 }} onClick={() => addGripperCode("M100")}> <UndoIcon/> </Button>
-          <Button variant="contained"  sx={{ width: 50, height: 70 }} onClick={() => addGripperCode("M200")}> <RedoIcon/> </Button>
           <Button variant="contained"  sx={{ width: 50, height: 70 }} onClick={() => saveRoutine(selectedRoutine, rows)} color="error"> <SaveIcon/> </Button>
        </Stack>
        <Stack direction="row" spacing={1} marginBottom={2}>
