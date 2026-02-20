@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Paper,
@@ -10,12 +11,16 @@ import {
 } from "@mui/material";
 import { useRef } from "react";
 
+
 export default function AIScientistPage() {
   const [messages, setMessages] = useState([
     { role: "ai", text: "Hello! I am the CVLab AI Scientist 🤖 🧪" }
   ]);
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState("Find NaCl concentration that maximises anodic peak current at 0.3 V.");
   const [thinking, setThinking] = useState(false);
+  const [experimentJson, setExperimentJson] = useState(null);
+  const navigate = useNavigate(); 
+
 
   const sendMessage = async () => {
   if (!input.trim()) return;
@@ -35,8 +40,12 @@ export default function AIScientistPage() {
     const data = await res.json();
     const responseText = data.response || "Error from AI.";
 
-    // Animate word-by-word
+    if (data.experiment_json) {
+      setExperimentJson(data.experiment_json);
+    }
+
     await addMessageWordByWord(responseText);
+
     
   } catch (err) {
     setMessages((prev) => [
@@ -52,37 +61,40 @@ const intervalRef = useRef(null);
 
 const addMessageWordByWord = (text) => {
   return new Promise((resolve) => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-    }
+    if (intervalRef.current) clearInterval(intervalRef.current);
 
-    const words = text.split(/\s+/);
+    // Split by space or newline, keep newlines as separate elements
+    const words = text.split(/(\s+)/); // ✅ includes spaces and \n
+
     let idx = 0;
 
     setMessages((prev) => [...prev, { role: "ai", text: "" }]);
 
     intervalRef.current = setInterval(() => {
-      setMessages((prev) => {
-        const newMessages = [...prev];
-        const lastMsg = { ...newMessages[newMessages.length - 1] };
-
-        lastMsg.text += (lastMsg.text ? " " : "") + words[idx];
-        newMessages[newMessages.length - 1] = lastMsg;
-
-        return newMessages;
-      });
-
-      idx++;
-
       if (idx >= words.length) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
         resolve();
+        return;
       }
-    }, 150);
+
+      const word = words[idx];
+      if (word !== undefined) {
+        setMessages((prev) => {
+          const newMessages = [...prev];
+          const lastMsg = { ...newMessages[newMessages.length - 1] };
+
+          lastMsg.text += word; // spaces/newlines preserved
+          newMessages[newMessages.length - 1] = lastMsg;
+
+          return newMessages;
+        });
+      }
+
+      idx++;
+    }, 50); // faster typing, adjust if you like
   });
 };
-
 
   return (
     <Paper sx={{ p: 3, maxWidth: 900, mx: "auto", height: "80vh" }}>
@@ -113,7 +125,8 @@ const addMessageWordByWord = (text) => {
                 px: 2,
                 py: 1,
                 borderRadius: 2,
-                maxWidth: "70%"
+                maxWidth: "70%",
+                whiteSpace: "pre-wrap"   
               }}
             >
               {m.text}
@@ -138,10 +151,20 @@ const addMessageWordByWord = (text) => {
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && sendMessage()}
         />
-        <Button variant="contained" onClick={sendMessage}>
-          Send
+        <Button variant="contained" onClick={sendMessage}>Send</Button>
+        {experimentJson && (
+        <Button
+          variant="contained"
+          color="secondary"
+          sx={{ fontWeight: "bold", textTransform: "none" }}
+          onClick={() =>
+            navigate("/reasype", { state: { experiment: experimentJson } })
+          }
+        >
+          rEasype
         </Button>
+        )}
       </Stack>
-    </Paper>
+      </Paper>
   );
 }
