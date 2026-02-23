@@ -53,6 +53,26 @@ export default function EchemPage() {
   const [playSpeed, setPlaySpeed] = useState(1000); 
   const [cameraEnabled, setCameraEnabled] = useState(false);
   const [instruction, setInstruction] = useState(instructionImg);
+const controlButtonSx = {
+  height: 70,
+  fontWeight: 700,
+  fontSize: "0.8rem",
+  letterSpacing: "0.6px",
+  textTransform: "none",
+  lineHeight: 1.2,
+  fontFamily: "'Inter', 'Roboto', sans-serif",
+  borderRadius: 2,
+  };
+
+  const wideButton = {
+    ...controlButtonSx,
+    width: 105,
+  };
+
+  const normalButton = {
+    ...controlButtonSx,
+    width: 100,
+  };
 
 
 
@@ -531,8 +551,6 @@ const toggleCamera = () => {
         </TextField>
       </Stack>
 
-      
-
       <Stack direction="row" spacing={2} marginBottom={2}>
         <Button variant="contained" onClick={async () => {await jog("x", "-"); await state("/status")}} sx={{ width: 80, height: 80 }}>X<WestIcon style={{ marginLeft: 11 }}/></Button>
         <Button variant="contained" onClick={async () => {await call("/echem_arm_home"); await state("/status")}}sx={{ width: 80, height: 80 }}><HomeIcon/></Button>
@@ -557,19 +575,82 @@ const toggleCamera = () => {
         <Button variant="contained" color="warning" onClick={toggleCamera}>{cameraEnabled ? "Show Instructions" : "Show Camera"}</Button>
        </Stack>
       
-      <Stack direction="row" spacing={1} marginBottom={2}>
-        <Button variant="contained" color="seondary" onClick={() => {call("/echem_raise_electrodes"); setGripper(1)}} sx={{ width: 105, height: 70 }}>Lower Electrodes</Button>
-        <Button variant="contained" color="seondary" onClick={() => {call("/echem_polisher_on")}}sx={{ width: 100, height: 70 }}>Polisher ON</Button>
-        <Button variant="contained" color="seondary" onClick={() => {call("/echem_polisher_dropper_on"); setGripper(0)}} sx={{ width: 100, height: 70 }}>Dropper ON</Button>
-        <Button variant="contained" color="seondary" onClick={() => {call("/echem_purger_on"); setGripper(0)}} sx={{ width: 100, height: 70 }}>Purger ON</Button>
-       </Stack>
+<Stack direction="row" spacing={1} marginBottom={2}>
+  <Button
+    variant="contained"
+    color="secondary"
+    onClick={() => {call("/echem_raise_electrodes"); setGripper(1)}}
+    sx={wideButton}
+  >
+    Lower Electrodes
+  </Button>
 
-      <Stack direction="row" spacing={1} marginBottom={2}>
-        <Button variant="contained" color="secondary" onClick={() => {call("/echem_lower_electrodes"); setGripper(1)}} sx={{ width: 105, height: 70 }}>Raise Electrodes</Button>
-        <Button variant="contained" color="secondary" onClick={() => {call("/echem_polisher_off")}}sx={{ width: 100, height: 70 }}>Polisher OFF</Button>
-        <Button variant="contained" color="secondary" onClick={() => {call("/echem_polisher_dropper_off"); setGripper(0)}} sx={{ width: 100, height: 70 }}>Dropper OFF</Button>
-        <Button variant="contained" color="secondary" onClick={() => {call("/echem_purger_off"); setGripper(0)}} sx={{ width: 100, height: 70 }}>Purger OFF</Button>
-       </Stack>
+  <Button
+    variant="contained"
+    color="secondary"
+    onClick={() => {call("/echem_polisher_on")}}
+    sx={normalButton}
+  >
+    Polisher ON
+  </Button>
+
+  <Button
+    variant="contained"
+    color="secondary"
+    onClick={() => {call("/echem_polisher_dropper_on"); setGripper(0)}}
+    sx={normalButton}
+  >
+    Dropper ON
+  </Button>
+
+  <Button
+    variant="contained"
+    color="secondary"
+    onClick={() => {call("/echem_purger_on"); setGripper(0)}}
+    sx={normalButton}
+  >
+    Purger ON
+  </Button>
+</Stack>
+
+<Stack direction="row" spacing={1} marginBottom={2}>
+  <Button
+    variant="contained"
+    color="secondary"
+    onClick={() => {call("/echem_lower_electrodes"); setGripper(1)}}
+    sx={wideButton}
+  >
+    Raise Electrodes
+  </Button>
+
+  <Button
+    variant="contained"
+    color="secondary"
+    onClick={() => {call("/echem_polisher_off")}}
+    sx={normalButton}
+  >
+    Polisher OFF
+  </Button>
+
+  <Button
+    variant="contained"
+    color="secondary"
+    onClick={() => {call("/echem_polisher_dropper_off"); setGripper(0)}}
+    sx={normalButton}
+  >
+    Dropper OFF
+  </Button>
+
+  <Button
+    variant="contained"
+    color="secondary"
+    onClick={() => {call("/echem_purger_off"); setGripper(0)}}
+    sx={normalButton}
+  >
+    Purger OFF
+  </Button>
+</Stack>
+
 
       <Stack direction="row" spacing={2}>
         <TextField
