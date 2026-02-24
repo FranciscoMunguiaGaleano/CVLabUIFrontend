@@ -4,6 +4,7 @@ import Editor from "@monaco-editor/react";
 
 export default function WorkflowsPage() {
   const [code, setCode] = useState(`# Example workflow
+from cvlab import echem
 def run():
     print("Hello electrochemistry")
 `);
