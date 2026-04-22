@@ -25,7 +25,7 @@ const [thinking, setThinking] = useState(false);
 const [log_text, setState] = useState("[INFO] Waiting for instructions...");
 const get_method = (endpoint, payload = null) => {
     setThinking(true);
-    fetch(`http://localhost:8080/api/v1/phmeter${endpoint}`, 
+    fetch(`http://localhost:8080/api/v1/${endpoint}`, 
     {
       method: "GET",
       headers: { "Content-Type": "application/json" },
@@ -59,9 +59,29 @@ return (
             alignItems: 'center',
             height: '5vh'}}>
             <Stack direction="column" spacing={2} marginBottom={2}>
-              <h2>pH Meter Control</h2>
+              <h2>pH Meter Control Arduino</h2>
             </Stack>
           </div>
+      
+      <Stack direction="row" spacing={2} marginBottom={2}>
+        <Button variant="contained" onClick={() => get_method("phmeter/read_status")}sx={{ width: 400, height: 50 }} color="success"> Status <StateIcon style={{ marginLeft: 11 }}/> </Button>
+        <Button variant="contained" onClick={() => get_method("phmeter/read_ph")}sx={{ width: 400, height: 50 }}>  Read pH <ReadIcon style={{ marginLeft: 11 }}/></Button>
+      </Stack>
+      <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '5vh'}}>
+            <Stack direction="column" spacing={2} marginBottom={2}>
+              <h2>pH Meter Control Toledo Easy Plus</h2>
+            </Stack>
+          </div>
+
+      <Stack direction="row" spacing={2} marginBottom={2}>
+        <Button variant="contained" onClick={() => get_method("phmeter_toledo/read_status")}sx={{ width: 400, height: 50 }} color="success"> Status <StateIcon style={{ marginLeft: 11 }}/> </Button>
+        <Button variant="contained" onClick={() => get_method("phmeter_toledo/read_ph")}sx={{ width: 400, height: 50 }}>  Read pH <ReadIcon style={{ marginLeft: 11 }}/></Button>
+      </Stack>
+      
       <Stack direction="column" spacing={2} marginBottom={2}>
               <TextField
                 label=""
@@ -74,10 +94,6 @@ return (
                 <Typography variant="body2">Executing Instruction…</Typography>
                 </Box>
               )}
-      </Stack>
-      <Stack direction="row" spacing={2} marginBottom={2}>
-        <Button variant="contained" onClick={() => get_method("/read_status")}sx={{ width: 400, height: 50 }} color="success"> Status <StateIcon style={{ marginLeft: 11 }}/> </Button>
-        <Button variant="contained" onClick={() => get_method("/read_ph")}sx={{ width: 400, height: 50 }}>  Read pH <ReadIcon style={{ marginLeft: 11 }}/></Button>
       </Stack>
     </Paper>
 );

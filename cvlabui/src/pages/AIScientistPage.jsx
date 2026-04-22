@@ -14,7 +14,7 @@ import { useRef } from "react";
 
 export default function AIScientistPage() {
   const [messages, setMessages] = useState([
-    { role: "ai", text: "Hello! I am the CVLab AI Scientist 🤖 🧪" }
+    { role: "ai", text: "Hello! I am 'el Toques' the CVLab AI Scientist 🤖 🧪" }
   ]);
   const [input, setInput] = useState("Find NaCl concentration that maximises anodic peak current at 0.3 V.");
   const [thinking, setThinking] = useState(false);
