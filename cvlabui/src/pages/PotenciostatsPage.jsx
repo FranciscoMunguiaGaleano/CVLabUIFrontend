@@ -1,144 +1,239 @@
 import React, { useState } from "react";
 import {
-  Paper,
-  Tabs,
-  Tab,
-  Box,
-  Grid,
-  Typography,
-  TextField,
-  Button,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Select,
-  Stack,
-  Divider
+  Paper, Tabs, Tab, Box, Grid, Typography, TextField,
+  Button, MenuItem, FormControl, InputLabel, Select, Stack, Divider
 } from "@mui/material";
+
+const API_BASE = "http://192.168.0.142:8080/api/v1/potentiostat";
 
 function PotentiostatPanel({ id }) {
   const [mode, setMode] = useState("CV");
-  const [scanRate, setScanRate] = useState(100);
-  const [startVoltage, setStartVoltage] = useState(-0.5);
-  const [endVoltage, setEndVoltage] = useState(0.5);
-  const [cycles, setCycles] = useState(1);
-  const [samplingInterval, setSamplingInterval] = useState(10);
-  const [gain, setGain] = useState(1);
 
+  // Shared
+  const [iRange, setIRange] = useState(5);
+
+  // CV / LV
+  const [startVoltage, setStartVoltage] = useState(0);
+  const [endVoltage, setEndVoltage] = useState(1);
+  const [scanRate, setScanRate] = useState(100);
+  const [cycles, setCycles] = useState(1);
+
+  // Time-based
+  const [duration, setDuration] = useState(10);
+  const [samplingPeriod, setSamplingPeriod] = useState(0.1);
+
+const handleStart = async () => {
+  let endpoint = "";
+  let params = {};
+
+  if (mode === "CV") {
+    endpoint = `${API_BASE}/${id}/cyclic_voltammetry`;
+    params = {
+      i_range: iRange,
+      start_potential: startVoltage,
+      potential_vertex: endVoltage,
+      scan_rate: scanRate,
+      cycles: cycles,
+      increment: 0.01
+    };
+  }
+
+  if (mode === "LV") {
+    endpoint = `${API_BASE}/${id}/linear_voltammetry`;
+    params = {
+      i_range: iRange,
+      start_potential: startVoltage,
+      end_potential: endVoltage,
+      scan_rate: scanRate,
+      increment: 0.01
+    };
+  }
+
+  if (mode === "OC") {
+    endpoint = `${API_BASE}/${id}/open_circuit`;
+    params = {
+      duration: duration,
+      sampling_period: samplingPeriod
+    };
+  }
+
+  if (mode === "EL") {
+    endpoint = `${API_BASE}/${id}/electrolysis`;
+    params = {
+      i_range: iRange,
+      potential: startVoltage,
+      duration: duration,
+      sampling_period: samplingPeriod
+    };
+  }
+
+  try {
+    // 🔥 IMPORTANT: use query params (NOT JSON)
+    const query = new URLSearchParams(params).toString();
+
+    const response = await fetch(`${endpoint}?${query}`, {
+      method: "POST"
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      throw new Error(errText);
+    }
+
+    const csvText = await response.text();
+
+    const blob = new Blob([csvText], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `p${id}_${mode}.csv`;
+    a.click();
+
+    window.URL.revokeObjectURL(url);
+
+  } catch (err) {
+    console.error(err);
+    alert("Request failed: " + err.message);
+  }
+};
   return (
     <Grid container spacing={3}>
-      {/* Plot Area */}
+      {/* Plot */}
       <Grid item xs={12} md={8}>
-        <Paper elevation={3} sx={{ p: 3, height: 400 }}>
-          <Typography variant="h6" gutterBottom>
+        <Paper sx={{ p: 3, height: 400 }}>
+          <Typography variant="h6">
             Live Plot – Potentiostat {id}
           </Typography>
-
-          {/* Placeholder plot area */}
-          <Box
-            sx={{
-              height: 300,
-              border: "2px dashed #ccc",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              borderRadius: 2
-            }}
-          >
-            <Typography variant="body2" color="text.secondary">
-              Plot will appear here (Voltage vs Current)
-            </Typography>
+          <Box sx={{
+            height: 300,
+            border: "2px dashed #ccc",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center"
+          }}>
+            Plot will appear here
           </Box>
         </Paper>
       </Grid>
 
       {/* Controls */}
       <Grid item xs={12} md={4}>
-        <Paper elevation={3} sx={{ p: 3 }}>
-          <Typography variant="h6" gutterBottom>
-            Controls
-          </Typography>
+        <Paper sx={{ p: 3 }}>
+          <Typography variant="h6">Controls</Typography>
 
           <Stack spacing={2}>
+
             <FormControl fullWidth>
               <InputLabel>Mode</InputLabel>
-              <Select
-                value={mode}
-                label="Mode"
-                onChange={(e) => setMode(e.target.value)}
-              >
-                <MenuItem value="CV">Cyclic Voltammetry (CV)</MenuItem>
-                <MenuItem value="CA">Chronoamperometry (CA)</MenuItem>
-                <MenuItem value="LSV">Linear Sweep Voltammetry (LSV)</MenuItem>
-                <MenuItem value="EIS">Electrochemical Impedance (EIS)</MenuItem>
+              <Select value={mode} onChange={(e) => setMode(e.target.value)}>
+                <MenuItem value="CV">Cyclic Voltammetry</MenuItem>
+                <MenuItem value="LV">Linear Voltammetry</MenuItem>
+                <MenuItem value="OC">Open Circuit</MenuItem>
+                <MenuItem value="EL">Electrolysis</MenuItem>
               </Select>
             </FormControl>
 
-            <TextField
-              label="Scan Rate (mV/s)"
-              type="number"
-              value={scanRate}
-              onChange={(e) => setScanRate(Number(e.target.value))}
-              fullWidth
-            />
+            {/* CV + LV */}
+            {(mode === "CV" || mode === "LV") && (
+              <>
+                <TextField
+                  label="Current Range (i_range)"
+                  type="number"
+                  value={iRange}
+                  onChange={(e) => setIRange(Number(e.target.value))}
+                />
 
-            <TextField
-              label="Start Voltage (V)"
-              type="number"
-              inputProps={{ step: 0.01 }}
-              value={startVoltage}
-              onChange={(e) => setStartVoltage(Number(e.target.value))}
-              fullWidth
-            />
+                <TextField
+                  label="Start Potential (V)"
+                  type="number"
+                  value={startVoltage}
+                  onChange={(e) => setStartVoltage(Number(e.target.value))}
+                />
 
-            <TextField
-              label="End Voltage (V)"
-              type="number"
-              inputProps={{ step: 0.01 }}
-              value={endVoltage}
-              onChange={(e) => setEndVoltage(Number(e.target.value))}
-              fullWidth
-            />
+                <TextField
+                  label={mode === "CV" ? "Vertex Potential (V)" : "End Potential (V)"}
+                  type="number"
+                  value={endVoltage}
+                  onChange={(e) => setEndVoltage(Number(e.target.value))}
+                />
 
-            <TextField
-              label="Cycles"
-              type="number"
-              inputProps={{ min: 1 }}
-              value={cycles}
-              onChange={(e) => setCycles(Number(e.target.value))}
-              fullWidth
-            />
+                <TextField
+                  label="Scan Rate (mV/s)"
+                  type="number"
+                  value={scanRate}
+                  onChange={(e) => setScanRate(Number(e.target.value))}
+                />
+
+                {mode === "CV" && (
+                  <TextField
+                    label="Cycles"
+                    type="number"
+                    value={cycles}
+                    onChange={(e) => setCycles(Number(e.target.value))}
+                  />
+                )}
+              </>
+            )}
+
+            {/* OC */}
+            {mode === "OC" && (
+              <>
+                <TextField
+                  label="Duration (s)"
+                  type="number"
+                  value={duration}
+                  onChange={(e) => setDuration(Number(e.target.value))}
+                />
+
+                <TextField
+                  label="Sampling Period (s)"
+                  type="number"
+                  value={samplingPeriod}
+                  onChange={(e) => setSamplingPeriod(Number(e.target.value))}
+                />
+              </>
+            )}
+
+            {/* EL */}
+            {mode === "EL" && (
+              <>
+                <TextField
+                  label="Current Range (i_range)"
+                  type="number"
+                  value={iRange}
+                  onChange={(e) => setIRange(Number(e.target.value))}
+                />
+
+                <TextField
+                  label="Potential (V)"
+                  type="number"
+                  value={startVoltage}
+                  onChange={(e) => setStartVoltage(Number(e.target.value))}
+                />
+
+                <TextField
+                  label="Duration (s)"
+                  type="number"
+                  value={duration}
+                  onChange={(e) => setDuration(Number(e.target.value))}
+                />
+
+                <TextField
+                  label="Sampling Period (s)"
+                  type="number"
+                  value={samplingPeriod}
+                  onChange={(e) => setSamplingPeriod(Number(e.target.value))}
+                />
+              </>
+            )}
 
             <Divider />
 
-            <TextField
-              label="Sampling Interval (ms)"
-              type="number"
-              value={samplingInterval}
-              onChange={(e) => setSamplingInterval(Number(e.target.value))}
-              fullWidth
-            />
-
-            <TextField
-              label="Gain"
-              type="number"
-              value={gain}
-              onChange={(e) => setGain(Number(e.target.value))}
-              fullWidth
-            />
-
-            <Stack direction="row" spacing={2}>
-              <Button variant="contained" color="success" fullWidth>
-                Start
-              </Button>
-              <Button variant="contained" color="error" fullWidth>
-                Stop
-              </Button>
-            </Stack>
-
-            <Button variant="outlined" fullWidth>
-              Export Data
+            <Button variant="contained" color="success" onClick={handleStart}>
+              Start
             </Button>
+
           </Stack>
         </Paper>
       </Grid>
@@ -146,23 +241,17 @@ function PotentiostatPanel({ id }) {
   );
 }
 
-export default function PotenciostatsPage() {
+export default function PotentiostatsPage() {
   const [tab, setTab] = useState(0);
 
-  const handleChange = (event, newValue) => {
-    setTab(newValue);
-  };
-
   return (
-    <Paper sx={{ p: 4, maxWidth: 1200, margin: "0 auto" }} elevation={3}>
-      <Typography variant="h4" gutterBottom>
-        Potentiostats Control
-      </Typography>
+    <Paper sx={{ p: 4, maxWidth: 1200, margin: "0 auto" }}>
+      <Typography variant="h4">Potentiostats</Typography>
 
-      <Tabs value={tab} onChange={handleChange} sx={{ mb: 3 }}>
-        <Tab label="Potentiostat 1" />
-        <Tab label="Potentiostat 2" />
-        <Tab label="Potentiostat 3" />
+      <Tabs value={tab} onChange={(e, v) => setTab(v)}>
+        <Tab label="P1" />
+        <Tab label="P2" />
+        <Tab label="P3" />
       </Tabs>
 
       {tab === 0 && <PotentiostatPanel id={1} />}

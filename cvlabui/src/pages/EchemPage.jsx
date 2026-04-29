@@ -92,7 +92,7 @@ useEffect(() => {
 const jog = useCallback(async (axis, direction) => {
   const signedStep = direction === "+" ? step : -step;
   setThinking(true);
-  return fetch(`http://localhost:8080/api/v1/echem/jog_${axis}`, {
+  return fetch(`http://192.168.0.142:8080/api/v1/echem/jog_${axis}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ step: signedStep }),
@@ -114,7 +114,7 @@ const jog = useCallback(async (axis, direction) => {
 
   const call = async (endpoint, payload = null) => {
     setThinking(true);
-    return fetch(`http://localhost:8080/api/v1/echem${endpoint}`, {
+    return fetch(`http://192.168.0.142:8080/api/v1/echem${endpoint}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: payload ? JSON.stringify(payload) : null,
@@ -137,7 +137,7 @@ const jog = useCallback(async (axis, direction) => {
 
 const state = async (endpoint, payload = null) => {
   setThinking(true);
-  return fetch(`http://localhost:8080/api/v1/echem${endpoint}`, {
+  return fetch(`http://192.168.0.142:8080/api/v1/echem${endpoint}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: payload ? JSON.stringify(payload) : null,
@@ -166,7 +166,7 @@ const jogAndUpdate = async (axis, dir) => {
 useEffect(() => {
   if (!teachMode) return;
 
-  fetch("http://localhost:8080/api/v1/echem/routines")
+  fetch("http://192.168.0.142:8080/api/v1/echem/routines")
     .then((res) => res.json())
     .then((data) => setRoutines(data.routines || []))
     .catch(console.error);
@@ -174,7 +174,7 @@ useEffect(() => {
 
 const loadRoutine = (name) => {
   setSelectedRoutine(name);
-  fetch(`http://localhost:8080/api/v1/echem/routines/load/${name}`)
+  fetch(`http://192.168.0.142:8080/api/v1/echem/routines/load/${name}`)
     .then((res) => res.json())
     .then((data) => {
         setState(JSON.stringify(data["message"]));
@@ -209,7 +209,7 @@ const saveRoutine = (name, rows) => {
     return line;
   });
 
-  fetch(`http://localhost:8080/api/v1/echem/routines/save/${name}`, {
+  fetch(`http://192.168.0.142:8080/api/v1/echem/routines/save/${name}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ gcodes })
@@ -495,7 +495,7 @@ const fetchCameraImage = async () => {
     setThinking(true);
 
     const response = await fetch(
-      "http://localhost:8080/api/v1/echem/capture",
+      "http://192.168.0.142:8080/api/v1/echem/capture",
       { method: "GET" }
     );
 

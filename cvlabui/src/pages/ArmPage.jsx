@@ -66,7 +66,7 @@ useEffect(() => {
 const jog = useCallback(async (axis, direction) => {
   const signedStep = direction === "+" ? step : -step;
   setThinking(true);
-  return fetch(`http://localhost:8080/api/v1/robot/arm/jog_${axis}`, {
+  return fetch(`http://192.168.0.142:8080/api/v1/robot/arm/jog_${axis}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ step: signedStep }),
@@ -88,7 +88,7 @@ const jog = useCallback(async (axis, direction) => {
 
   const call = async (endpoint, payload = null) => {
     setThinking(true);
-    return fetch(`http://localhost:8080/api/v1/robot/arm${endpoint}`, {
+    return fetch(`http://192.168.0.142:8080/api/v1/robot/arm${endpoint}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: payload ? JSON.stringify(payload) : null,
@@ -111,7 +111,7 @@ const jog = useCallback(async (axis, direction) => {
 
 const state = async (endpoint, payload = null) => {
   setThinking(true);
-  return fetch(`http://localhost:8080/api/v1/robot/arm${endpoint}`, {
+  return fetch(`http://192.168.0.142:8080/api/v1/robot/arm${endpoint}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: payload ? JSON.stringify(payload) : null,
@@ -140,7 +140,7 @@ const jogAndUpdate = async (axis, dir) => {
 useEffect(() => {
   if (!teachMode) return;
 
-  fetch("http://localhost:8080/api/v1/robot/arm/routines")
+  fetch("http://192.168.0.142:8080/api/v1/robot/arm/routines")
     .then((res) => res.json())
     .then((data) => setRoutines(data.routines || []))
     .catch(console.error);
@@ -148,7 +148,7 @@ useEffect(() => {
 
 const loadRoutine = (name) => {
   setSelectedRoutine(name);
-  fetch(`http://localhost:8080/api/v1/robot/arm/routines/load/${name}`)
+  fetch(`http://192.168.0.142:8080/api/v1/robot/arm/routines/load/${name}`)
     .then((res) => res.json())
     .then((data) => {
         setState(JSON.stringify(data["message"]));
@@ -183,7 +183,7 @@ const saveRoutine = (name, rows) => {
     return line;
   });
 
-  fetch(`http://localhost:8080/api/v1/robot/arm/routines/save/${name}`, {
+  fetch(`http://192.168.0.142:8080/api/v1/robot/arm/routines/save/${name}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ gcodes })

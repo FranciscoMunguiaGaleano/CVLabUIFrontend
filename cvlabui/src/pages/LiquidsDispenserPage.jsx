@@ -31,7 +31,7 @@ const [dispense_flag, setDispenseflag] = useState(false);
 const [log_text, setState] = useState("[INFO] Waiting for instructions...");
 const get_method = (endpoint, payload = null) => {
     setThinking(true);
-    fetch(`http://localhost:8080/api/v1/liquids_dispenser${endpoint}`, 
+    fetch(`http://192.168.0.142:8080/api/v1/liquids_dispenser${endpoint}`, 
     {
       method: "GET",
       headers: { "Content-Type": "application/json" },
@@ -56,7 +56,7 @@ const get_method = (endpoint, payload = null) => {
 
 const post_method = (endpoint, data) => {
 
-  fetch(`http://localhost:8080/api/v1/liquids_dispenser${endpoint}`, {
+  fetch(`http://192.168.0.142:8080/api/v1/liquids_dispenser${endpoint}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
