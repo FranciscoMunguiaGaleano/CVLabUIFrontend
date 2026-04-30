@@ -67,7 +67,7 @@ useEffect(() => {
 const jog = useCallback(async (axis, direction) => {
   const signedStep = direction === "+" ? step : -step;
   setThinking(true);
-  return fetch(`http://localhost:8080/api/v1/pipettebot/jog_${axis}`, {
+  return fetch(`http://192.168.0.142:8080/api/v1/pipettebot/jog_${axis}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ step: signedStep }),
@@ -89,7 +89,7 @@ const jog = useCallback(async (axis, direction) => {
 
 const call = async (endpoint, payload = null) => {
   setThinking(true);
-  return fetch(`http://localhost:8080/api/v1/pipettebot${endpoint}`, {
+  return fetch(`http://192.168.0.142:8080/api/v1/pipettebot${endpoint}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: payload ? JSON.stringify(payload) : null,
@@ -112,7 +112,7 @@ const call = async (endpoint, payload = null) => {
 
 const state = async (endpoint, payload = null) => {
   setThinking(true);
-  return fetch(`http://localhost:8080/api/v1/pipettebot${endpoint}`, {
+  return fetch(`http://192.168.0.142:8080/api/v1/pipettebot${endpoint}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: payload ? JSON.stringify(payload) : null,
@@ -140,7 +140,7 @@ const jogAndUpdate = async (axis, dir) => {
 useEffect(() => {
   if (!teachMode) return;
 
-  fetch("http://localhost:8080/api/v1/pipettebot/routines")
+  fetch("http://192.168.0.142:8080/api/v1/pipettebot/routines")
     .then((res) => res.json())
     .then((data) => setRoutines(data.routines || []))
     .catch(console.error);
@@ -148,7 +148,7 @@ useEffect(() => {
 
 const loadRoutine = (name) => {
   setSelectedRoutine(name);
-  fetch(`http://localhost:8080/api/v1/pipettebot/routines/load/${name}`)
+  fetch(`http://192.168.0.142:8080/api/v1/pipettebot/routines/load/${name}`)
     .then((res) => res.json())
     .then((data) => {
         setState(JSON.stringify(data["message"]));
@@ -183,7 +183,7 @@ const saveRoutine = (name, rows) => {
     return line;
   });
 
-  fetch(`http://localhost:8080/api/v1/pipettebot/routines/save/${name}`, {
+  fetch(`http://192.168.0.142:8080/api/v1/pipettebot/routines/save/${name}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ gcodes })
@@ -388,12 +388,43 @@ useEffect(() => {
       case "u":
         state("/status");
         break;
-
-      // Dispense
-      case "o":
-        addGripperCode("M103"); //Load
+      
+      case "l": //pre-Load
+        call("/pipette_preload"); 
+        setGripper(1); 
+        break; 
+      case "p": // Load
+        call("/pipette_load"); 
+        setGripper(0);
+        break;
+      case "o": // Dispense
+        call("/pipette_unload"); 
+        setGripper(1);
         break; 
       case "k": // Eject
+        call("/pipette_eject_tip"); 
+        setGripper(0)
+        break;
+
+      // pippette code
+      case "1": //pre-Load
+      call("/pipette_preload"); 
+        setGripper(1); 
+        addGripperCode("M101"); 
+        break; 
+      case "2": // Load
+      call("/pipette_load"); 
+        setGripper(0);
+        addGripperCode("M102");
+        break;
+      case "3": // Dispense
+        call("/pipette_unload"); 
+        setGripper(1);
+        addGripperCode("M103"); 
+        break; 
+      case "4": // Eject
+        call("/pipette_eject_tip"); 
+        setGripper(0)
         addGripperCode("M104");
         break;
 
@@ -403,14 +434,6 @@ useEffect(() => {
         break;
       case "w":
         removeSelectedRow();
-        break;
-
-      // Pipette code
-      case "e":
-        addGripperCode("M101"); //Pre load
-        break;
-      case "r":
-        addGripperCode("M102"); //Load
         break;
 
       // Save
