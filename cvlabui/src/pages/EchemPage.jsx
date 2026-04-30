@@ -386,10 +386,10 @@ useEffect(() => {
     switch (e.key) {
       // XY jog
       case "ArrowUp":
-        jogAndUpdate("y", "-");
+        jogAndUpdate("z", "+");
         break;
       case "ArrowDown":
-        jogAndUpdate("y", "+");
+        jogAndUpdate("z", "-");
         break;
       case "ArrowRight":
         jogAndUpdate("x", "+");
@@ -400,10 +400,10 @@ useEffect(() => {
 
       // Z jog
       case "p":
-        jogAndUpdate("z", "+");
+        jogAndUpdate("y", "-");
         break;
-      case "k":
-        jogAndUpdate("z", "-");
+      case "l":
+        jogAndUpdate("y", "+");
         break;
 
       // Step size
@@ -422,15 +422,6 @@ useEffect(() => {
       case "u":
         state("/status");
         break;
-
-      // Gripper
-      case "o":
-        call("/open_gripper");
-        break;
-      case "c": // moved from "k" to avoid conflict
-        call("/close_gripper");
-        break;
-
       // Routine table
       case "q":
         addRow();
@@ -438,15 +429,6 @@ useEffect(() => {
       case "w":
         removeSelectedRow();
         break;
-
-      // Gripper code
-      case "e":
-        addGripperCode("M100");
-        break;
-      case "r":
-        addGripperCode("M200");
-        break;
-
       // Save
       case "t":
         saveRoutine(selectedRoutine, rows);
