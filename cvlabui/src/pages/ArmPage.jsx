@@ -376,7 +376,7 @@ useEffect(() => {
       case "p":
         jogAndUpdate("z", "+");
         break;
-      case "k":
+      case "l":
         jogAndUpdate("z", "-");
         break;
 
@@ -401,7 +401,7 @@ useEffect(() => {
       case "o":
         call("/open_gripper");
         break;
-      case "c": // moved from "k" to avoid conflict
+      case "k": // moved from "k" to avoid conflict
         call("/close_gripper");
         break;
 
@@ -416,9 +416,11 @@ useEffect(() => {
       // Gripper code
       case "e":
         addGripperCode("M100");
+        call("/open_gripper");
         break;
       case "r":
         addGripperCode("M200");
+        call("/close_gripper");
         break;
 
       // Save
