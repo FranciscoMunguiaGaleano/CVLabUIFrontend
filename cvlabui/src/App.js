@@ -41,7 +41,7 @@ import WaterIcon from "@mui/icons-material/Water"; // pH Meter
 import PlaylistAddCheckIcon from "@mui/icons-material/Description"; // Workflows
 import PotenciostatIcon from "@mui/icons-material/Troubleshoot"; // Potentiostats
 import PipetteIcon from "@mui/icons-material/Colorize"; // PipetteIcon
-
+import { Navigate } from "react-router-dom";
 
 const drawerWidth = 240;
 
@@ -153,23 +153,23 @@ function Layout() {
           backgroundColor: theme.palette.background.default
         }}
       >
-        <Routes>
-          <Route path="/" element={<ArmPage />} />
-          <Route path="/aiscientist" element={<AIScientistPage />} />
-          <Route path="/reasype" element={<ReasypePage />} />
-          <Route path="/arm" element={<ArmPage />} />
-          <Route path="/echem" element={<EchemPage />} />
-          <Route path="/pipette" element={<PipettePage />} />
-          <Route path="/carousels" element={<CarouselsPage />} />
-          <Route path="/solids_dispenser" element={<SolidsDispenserPage />} />
-          <Route path="/liquids_dispenser" element={<LiquidsDispenserPage />} />
-          <Route path="/capper" element={<CapperPage />} />
-          <Route path="/mixer" element={<MixerPage />} />
-          <Route path="/phmeter" element={<PHMeterPage />} />
-          <Route path="/potenciostats" element={<PotenciostatsPage/>}/>
-          <Route path="/workflows" element={<WorkflowsPage />} />
-          <Route path="/core" element={<CoreDocsPage />} />
-        </Routes>
+      <Routes>
+        <Route path="/" element={<Navigate to="/arm" replace />} />
+        <Route path="/aiscientist" element={<AIScientistPage />} />
+        <Route path="/reasype" element={<ReasypePage />} />
+        <Route path="/arm" element={<ArmPage />} />
+        <Route path="/echem" element={<EchemPage />} />
+        <Route path="/pipette" element={<PipettePage />} />
+        <Route path="/carousels" element={<CarouselsPage />} />
+        <Route path="/solids_dispenser" element={<SolidsDispenserPage />} />
+        <Route path="/liquids_dispenser" element={<LiquidsDispenserPage />} />
+        <Route path="/capper" element={<CapperPage />} />
+        <Route path="/mixer" element={<MixerPage />} />
+        <Route path="/phmeter" element={<PHMeterPage />} />
+        <Route path="/potenciostats" element={<PotenciostatsPage />} />
+        <Route path="/workflows" element={<WorkflowsPage />} />
+        <Route path="/core" element={<CoreDocsPage />} />
+      </Routes>
       </Box>
     </Box>
   );
