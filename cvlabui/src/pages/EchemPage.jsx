@@ -599,7 +599,15 @@ const toggleCamera = () => {
     onClick={() => {call("/echem_stirrer_on"); setGripper(0)}}
     sx={normalButton}
   >
-    Stirrer ON
+    Stirrers ON
+  </Button>
+      <Button
+    variant="contained"
+    color="secondary"
+    onClick={() => {call("/echem_washer_on"); setGripper(0)}}
+    sx={normalButton}
+  >
+    Washers ON
   </Button>
 </Stack>
 
@@ -646,6 +654,14 @@ const toggleCamera = () => {
     sx={normalButton}
   >
     Stirrer OFF
+  </Button>
+    <Button
+    variant="contained"
+    color="secondary"
+    onClick={() => {call("/echem_washer_off"); setGripper(0)}}
+    sx={normalButton}
+  >
+    Washer OFF
   </Button>
 </Stack>
 
