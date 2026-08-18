@@ -507,7 +507,7 @@ const toggleCamera = () => {
 
 
   return (
-  <Paper style={{ padding: 50, maxWidth: 1000, margin: "0px auto" }} elevation={3}>
+  <Paper style={{ padding: 50, maxWidth: 1200, margin: "0px auto" }} elevation={3}>
   <Grid container spacing={4}>
 
     {/* LEFT: Jog Control Panel */}
@@ -593,6 +593,14 @@ const toggleCamera = () => {
   >
     Purger ON
   </Button>
+  <Button
+    variant="contained"
+    color="secondary"
+    onClick={() => {call("/echem_stirrer_on"); setGripper(0)}}
+    sx={normalButton}
+  >
+    Stirrer ON
+  </Button>
 </Stack>
 
 <Stack direction="row" spacing={1} marginBottom={2}>
@@ -630,6 +638,14 @@ const toggleCamera = () => {
     sx={normalButton}
   >
     Purger OFF
+  </Button>
+  <Button
+    variant="contained"
+    color="secondary"
+    onClick={() => {call("/echem_stirrer_off"); setGripper(0)}}
+    sx={normalButton}
+  >
+    Stirrer OFF
   </Button>
 </Stack>
 
