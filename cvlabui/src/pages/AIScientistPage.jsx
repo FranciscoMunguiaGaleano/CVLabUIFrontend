@@ -18,8 +18,8 @@ import {
 // CONSTANTS
 // ============================================================
 //192.168.0.142
-const API_BASE_URL =
-  "http://localhost:8080/api/v1/aiscientist";
+//const API_BASE_URL = "http://localhost:8080/api/v1/aiscientist";
+const API_BASE_URL = "http://192.168.0.142:8080/api/v1/aiscientist";
 
 const INITIAL_MESSAGE = {
   role: "ai",
@@ -27,7 +27,7 @@ const INITIAL_MESSAGE = {
 };
 
 const INITIAL_INPUT =
-  "Perform a cyclic voltammetry experiment to characterize Vitamin C as an analyte dissolved in the electrolyte. The Vitamin C should be prepared in the electrolyte and measured using the electrochemical substation. Use the available gold working electrode, platinum counter electrode, and Ag/AgCl reference electrode. Select appropriate electrolyte composition, Vitamin C concentration, CV parameters, mixing/preparation steps, and safety precautions based on the capabilities and constraints provided in the system context. The resulting experiment must be directly executable by the CVLab platform.";
+  "Perform a cyclic voltammetry experiment to characterize Vitamin C as an analyte dissolved in the electrolyte. The Vitamin C should be prepared in the electrolyte and measured using the electrochemical substation. Use the available gold working electrode (d = 2 mm), platinum counter electrode, and Ag/AgCl in KCL 3M reference electrode. Select appropriate electrolyte composition, Vitamin C concentration, CV parameters, mixing/preparation steps, and safety precautions based on the capabilities and constraints provided in the system context. The resulting experiment must be directly executable by the CVLab platform. For this case, please select MICROAMPS200 for the i_range parameter of the potentiostat.";
 
 // ============================================================
 // COMPONENT
@@ -565,16 +565,16 @@ export default function AIScientistPage() {
       >
         {/* Input */}
 
-        <TextField
-          fullWidth
-          placeholder="Ask the AI Scientist..."
-          value={input}
-          onChange={(event) =>
-            setInput(event.target.value)
-          }
-          onKeyDown={handleKeyDown}
-          disabled={thinking}
-        />
+      <TextField
+        fullWidth
+        multiline
+        minRows={5}
+        placeholder="Ask the AI Scientist..."
+        value={input}
+        onChange={(event) => setInput(event.target.value)}
+        onKeyDown={handleKeyDown}
+        disabled={thinking}
+      />
 
         {/* Send */}
 

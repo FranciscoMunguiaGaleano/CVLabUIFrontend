@@ -19,7 +19,8 @@ import { useLocation } from "react-router-dom";
 // API CONFIGURATION
 // ============================================================
 //192.168.0.142
-const API_BASE_URL = "http://localhost:8080";
+//const API_BASE_URL = "http://localhost:8080";
+const API_BASE_URL = "http://192.168.0.142:8080";
 
 const API_PATHS = {
   health: `${API_BASE_URL}/api/v1/aiscientist/health`,
