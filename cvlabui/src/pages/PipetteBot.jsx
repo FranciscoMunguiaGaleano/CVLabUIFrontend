@@ -291,7 +291,7 @@ const stepForward = async () => {
 
 
   setSelectedRowId(nextId);
-  await call("/gcode", { gcode });
+  await call("/pipette_arm_send_gcode", { gcode });
   await call("/status");
 
   setState(`[INFO] Executed [${oldId} => ${nextId}]: ${gcode}`);
@@ -318,7 +318,7 @@ const stepBackward = async () => {
   setSelectedRowId(prevId);
 
   // Send G-code
-  await call("/gcode", { gcode });
+  await call("/pipette_arm_send_gcode", { gcode });
   await call("/status");
 
   setState(`[INFO] Executed [${oldId} => ${prevId}]: ${gcode}`);

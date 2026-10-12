@@ -27,8 +27,7 @@ const INITIAL_MESSAGE = {
 };
 
 const INITIAL_INPUT =
-  "Perform a cyclic voltammetry experiment to characterize Vitamin C as an analyte dissolved in the electrolyte. The Vitamin C should be prepared in the electrolyte and measured using the electrochemical substation. Use the available gold working electrode (d = 2 mm), platinum counter electrode, and Ag/AgCl in KCL 3M reference electrode. Select appropriate electrolyte composition, Vitamin C concentration, CV parameters, mixing/preparation steps, and safety precautions based on the capabilities and constraints provided in the system context. The resulting experiment must be directly executable by the CVLab platform. For this case, please select MICROAMPS200 for the i_range parameter of the potentiostat.";
-
+"Perform a cyclic voltammetry experiment to characterize vitamin C as an analyte dissolved in the electrolyte. The vitamin C should be prepared in the electrolyte and measured using the electrochemical substation. Use the available platinum working electrode (d = 2 mm), platinum counter electrode, and Ag/AgCl in KCL 3M reference electrode. Select appropriate electrolyte composition, vitamin C concentration, CV parameters, mixing/preparation steps, and safety precautions based on the capabilities and constraints provided in the system context. The resulting experiment must be directly executable by the CVLab platform. Also, please perform 5 cycles."
 // ============================================================
 // COMPONENT
 // ============================================================
